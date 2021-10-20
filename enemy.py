@@ -46,7 +46,7 @@ class Boss:
     def __init__(self):
         self.image = load_image('boss.png')
         self.x = 600
-        self.y = 90
+        self.y = 95
         self.frame = 0
         self.dir = 1
         self.speed = 1
@@ -63,4 +63,7 @@ class Boss:
         self.frame = (self.frame + 1) % 40
 
     def draw(self):
-        self.image.clip_draw(80 * (self.frame // 10), 40, 80, 70, self.x, self.y)
+        if self.dir == 1:
+            self.image.clip_draw(80 * (self.frame // 10), 40, 80, 70, self.x, self.y)
+        else:
+            self.image.clip_draw(80 * (self.frame // 10), 150, 80, 70, self.x, self.y)
