@@ -1,6 +1,7 @@
 import mario
 import enemy
 import object
+import back
 
 from pico2d import *
 
@@ -18,38 +19,50 @@ def handle_events():
                 pass
 
 open_canvas()
-
+background = load_image('sky.png')
+pipe = object.Pipe(400, 70)
+back = back.Back()
 mario = mario.Mario(400, 80)
-# turtle = enemy.Turtle(500, 100)
-# goom = enemy.Goom(300, 100)
-blocks1 = [object.Block() for i in range(31)]
+boss = enemy.Boss()
+turtle = enemy.Turtle(500, 85)
+goom = enemy.Goom(300, 75)
 block_list1 = []
 for i in range(31):
     block_list1.append((i * 30, 15))
-blocks2 = [object.Block() for i in range(31)]
+blocks1 = [object.Block(block_list1[i][0], block_list1[i][1]) for i in range(31)]
 block_list2 = []
 for i in range(31):
     block_list2.append((i * 30, 45))
+blocks2 = [object.Block(block_list2[i][0], block_list2[i][1]) for i in range(31)]
+
 
 running = True
 
 while running:
     handle_events()
-    # turtle.update()
-    # goom.update()
+    turtle.update()
+    goom.update()
+    back.update()
     mario.update()
+    x = mario.get_x()
+    boss.update(x)
+
     clear_canvas()
+    background.draw(400, 300, 800, 600)
+    back.draw()
     i = 0
     for block in blocks1:
-        block.draw(block_list1[i][0], block_list1[i][1])
+        block.draw()
         i += 1
     i = 0
     for block in blocks2:
-        block.draw(block_list2[i][0], block_list2[i][1])
+        block.draw()
         i += 1
+    pipe.draw()
     mario.draw()
-    # turtle.draw()
-    # goom.draw()
+    boss.draw()
+    turtle.draw()
+    goom.draw()
     update_canvas()
 
     delay(0.01)

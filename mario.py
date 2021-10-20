@@ -21,7 +21,7 @@ class Mario:
         if self.dir != 0:
             self.running = True
             if self.speed < MAX_SPEED:
-                self.speed = self.speed + ACCEL
+                self.speed = self.speed + ACCEL * 0.5
             self.x += self.dir * self.speed
             self.frame = (self.frame + 1) % 4
         if self.jump:
@@ -32,8 +32,11 @@ class Mario:
                 self.y = self.oldy
                 self.jump = False
 
+    def get_bb(self):
+        return self.x - 25, self.y - 25, self.x + 25, self.y + 25
 
-
+    def get_x(self):
+        return self.x
 
     def worldMapMove(self, x, y):
         self.x = x
@@ -42,9 +45,9 @@ class Mario:
     def handleEvent(self, e):
         if e.type == SDL_KEYDOWN:
             if e.key == SDLK_LEFT:
-                self.dir = -1
+                self.dir -= 1
             elif e.key == SDLK_RIGHT:
-                self.dir = 1
+                self.dir += 1
             elif e.key == SDLK_UP:
                 if self.jump == False:
                     self.jump = True
