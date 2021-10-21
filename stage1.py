@@ -4,19 +4,26 @@ import object
 import back
 import game_framework
 import world
+import Map1
 
 from pico2d import *
 
 name = "Stage1"
 mario
+mapdata = None
+camera = 0
 
 def enter():
     global mario
+    global mapdata
     mario = mario.Mario(100, 80)
+    mapdata = Map1.Map1()
 
 def exit():
     global mario
+    global mapdata
     del(mario)
+    del(mapdata)
 
 def handle_events():
     events = get_events()
@@ -31,11 +38,22 @@ def handle_events():
                 pass
 
 def update():
+    global camera
+    mapdata.update()
     mario.update()
+    cx = mario.get_x()
+    cdx = mario.get_speed()
+    if cx - camera > 400:
+        camera += cdx
+    if cx - camera < 400 and camera > 0:
+        camera -= cdx
+    mario.set_camera(camera)
+    mapdata.set_camera(camera)
     delay(0.01)
 
 def draw():
     clear_canvas()
+    mapdata.draw()
     mario.draw()
     update_canvas()
 

@@ -16,6 +16,7 @@ class Mario:
         self.speed = 1
         self.jump = False
         self.t = 0
+        self.camera = 0
 
     def update(self):
         if self.dir != 0:
@@ -23,6 +24,8 @@ class Mario:
             if self.speed < MAX_SPEED:
                 self.speed = self.speed + ACCEL * 0.5
             self.x += self.dir * self.speed
+            if self.x < 0:
+                self.x = 20
             self.frame = (self.frame + 1) % 40
         if self.jump:
             ySpeed = 5
@@ -38,9 +41,11 @@ class Mario:
     def get_x(self):
         return self.x
 
-    def worldMapMove(self, x, y):
-        self.x = x
-        self.y = y
+    def get_speed(self):
+        return self.speed
+
+    def set_camera(self, c):
+        self.camera = c
 
     def handleEvent(self, e):
         if e.type == SDL_KEYDOWN:
@@ -63,20 +68,26 @@ class Mario:
                 self.dir -= 1
                 self.running = False
 
+
     def draw(self):
         if self.running:
             if self.dir == 1:
                 if (self.frame // 10) < 3:
-                    self.image.clip_draw(130 + (self.frame // 10) * 35, 339 + 380, 35, 40, self.x, self.y, 50, 50)
+                    self.image.clip_draw(130 + (self.frame // 10) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, 50, 50)
+                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
                 else:
-                    self.image.clip_draw(130 + (4 - (self.frame // 10)) * 35, 339 + 380, 35, 40, self.x, self.y, 50, 50)
+                    self.image.clip_draw(130 + (4 - (self.frame // 10)) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, 50, 50)
+                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
             else:
                 if (self.frame // 10) < 3:
-                    self.image.clip_draw(220 - (self.frame // 10) * 35, 335, 35, 40, self.x, self.y, 50, 50)
+                    self.image.clip_draw(220 - (self.frame // 10) * 35, 335, 35, 40, self.x - self.camera, self.y, 50, 50)
+                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
                 else:
-                    self.image.clip_draw(220 - (4 - (self.frame // 10)) * 35, 335, 35, 40, self.x, self.y, 50, 50)
+                    self.image.clip_draw(220 - (4 - (self.frame // 10)) * 35, 335, 35, 40, self.x - self.camera, self.y, 50, 50)
+                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
         else:
-            self.image.clip_draw(2, 339 + 380, 40, 40, self.x, self.y, 50, 50)
+            self.image.clip_draw(2, 339 + 380, 40, 40, self.x - self.camera, self.y, 50, 50)
+            draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
 
 def handle_events():
     global running
