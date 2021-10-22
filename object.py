@@ -11,12 +11,9 @@ class Block:
     def draw(self):
         self.image.draw(self.x, self.y, 30, 30)
 
-class GroundBlock:
+class RandomBox:
     def __init__(self):
-        self.image = load_image('block.png')
-
-    def draw(self, x, y):
-        self.image.draw(x, y)
+        self.image = load_image('randombox.png')
 
 class Pipe:
     def __init__(self, x, y):

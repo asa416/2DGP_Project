@@ -2,11 +2,12 @@ from pico2d import *
 from ground import grounds
 import object
 import back
+import backlayer
 
 class Map1:
     def __init__(self):
         self.groundNum = len(grounds)
-        self.groundblock = object.GroundBlock()
+        self.groundblock = backlayer.GroundBlock()
         self.back = back.Back()
         self.background = load_image('sky.png')
         self.camera = 0
@@ -26,7 +27,7 @@ class Map1:
 if __name__ == '__main__':
     open_canvas()
     num = len(grounds)
-    groundblock = object.GroundBlock()
+    groundblock = backlayer.GroundBlock()
 
     while True:
         clear_canvas()
