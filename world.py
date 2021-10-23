@@ -1,6 +1,8 @@
 from pico2d import *
 import game_framework
 import stage1
+import stage2
+import stage3
 
 name = "WolrdMap"
 image = None
@@ -44,7 +46,12 @@ def handle_events():
                 if stage_index < 3:
                     stage_index += 1
             elif event.key == SDLK_SPACE:
-                game_framework.change_state(stage1)
+                if stage_index == 1:
+                    game_framework.change_state(stage1)
+                elif stage_index == 2:
+                    game_framework.change_state(stage2)
+                elif stage_index == 3:
+                    game_framework.change_state(stage3)
 
 def update():
     delay(0.01)
