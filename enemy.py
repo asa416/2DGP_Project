@@ -7,6 +7,7 @@ class Turtle:
         self.frame = 0
         self.x_max, self.x_min = self.x + 50, self.x - 50
         self.dir = 1
+        self.camera = 0
 
     def update(self):
         self.x += self.dir
@@ -16,8 +17,12 @@ class Turtle:
         elif self.x < self.x_min:
             self.dir = 1
 
+    def set_camera(self, c):
+        self.camera = c
+
     def draw(self):
-        self.image.clip_draw(120 + (self.frame // 10) * 60, 135, 60, 60, self.x, self.y, 50, 50)
+        self.image.clip_draw(120 + (self.frame // 10) * 60, 135, 60, 60, self.x - self.camera, self.y, 50, 50)
+        draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
 
 class Goom:
     def __init__(self, x, y):
@@ -27,6 +32,7 @@ class Goom:
         self.dir = 1
         self.x_max = self.x + 50
         self.x_min = self.x - 50
+        self.camera = 0
 
     def update(self):
         self.x += self.dir * 1
@@ -36,12 +42,15 @@ class Goom:
         elif self.x < self.x_min:
             self.dir = 1
 
+    def set_camera(self, c):
+        self.camera = c
+
     def get_bb(self):
-        return self.x - 25, self.y - 25, self.x + 25, self.y + 25
+        return self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25
 
     def draw(self):
-        self.image.clip_draw((self.frame // 10) * 45 + 1, 0, 45, 45, self.x, self.y, 50, 50)
-
+        self.image.clip_draw((self.frame // 10) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, 50, 50)
+        draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
 class Boss:
     def __init__(self):
         self.image = load_image('boss.png')

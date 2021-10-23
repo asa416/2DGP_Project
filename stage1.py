@@ -16,7 +16,7 @@ camera = 0
 def enter():
     global mario
     global mapdata
-    mario = mario.Mario(100, 80)
+    mario = mario.Mario(100, 110)
     mapdata = Map1.Map1()
 
 def exit():

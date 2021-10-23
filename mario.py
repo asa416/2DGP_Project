@@ -17,6 +17,7 @@ class Mario:
         self.jump = False
         self.t = 0
         self.camera = 0
+        self.w, self.h = 50, 50
 
     def update(self):
         if self.dir != 0:
@@ -36,7 +37,7 @@ class Mario:
                 self.jump = False
 
     def get_bb(self):
-        return self.x - 25, self.y - 25, self.x + 25, self.y + 25
+        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
 
     def get_x(self):
         return self.x
@@ -70,24 +71,33 @@ class Mario:
 
 
     def draw(self):
-        if self.running:
+        if self.jump:
+            if self.dir == 1:
+                self.image.clip_draw(250, 339 + 380, 35, 40, self.x - self.camera, self.y, self.w, self.h)
+                draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2,
+                               self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+            else:
+                self.image.clip_draw(60, 335, 35, 40, self.x - self.camera, self.y, self.w, self.h)
+                draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2,
+                               self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+        elif self.running:
             if self.dir == 1:
                 if (self.frame // 10) < 3:
-                    self.image.clip_draw(130 + (self.frame // 10) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, 50, 50)
-                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+                    self.image.clip_draw(130 + (self.frame // 10) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, self.w, self.h)
+                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
                 else:
-                    self.image.clip_draw(130 + (4 - (self.frame // 10)) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, 50, 50)
-                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+                    self.image.clip_draw(130 + (4 - (self.frame // 10)) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, self.w, self.h)
+                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
             else:
                 if (self.frame // 10) < 3:
-                    self.image.clip_draw(220 - (self.frame // 10) * 35, 335, 35, 40, self.x - self.camera, self.y, 50, 50)
-                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+                    self.image.clip_draw(185 - (self.frame // 10) * 35, 335, 35, 40, self.x - self.camera, self.y, self.w, self.h)
+                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
                 else:
-                    self.image.clip_draw(220 - (4 - (self.frame // 10)) * 35, 335, 35, 40, self.x - self.camera, self.y, 50, 50)
-                    draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+                    self.image.clip_draw(185 - (4 - (self.frame // 10)) * 35, 335, 35, 40, self.x - self.camera, self.y, self.w, self.h)
+                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
         else:
-            self.image.clip_draw(2, 339 + 380, 40, 40, self.x - self.camera, self.y, 50, 50)
-            draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+            self.image.clip_draw(2, 339 + 380, 40, 40, self.x - self.camera, self.y, self.w, self.h)
+            draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
 
 def handle_events():
     global running
