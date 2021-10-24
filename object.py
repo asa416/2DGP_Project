@@ -39,8 +39,27 @@ class UneasyBlock(Block):
         self.frame = 0
 
 class EasyBlock(Block):
-    def __init__(self):
+    def __init__(self, x, y):
         self.image = load_image('block3.png')
+        self.x, self.y = x, y
+
+class BossBlock(Block):
+    def __init__(self, x, y):
+        self.image = load_image('bossblock.png')
+        self.w, self.h = 30, 50
+        self.x, self.y = x, y
+
+class BossGround:
+    def __init__(self, x, y):
+        self.image = load_image('bossground.png')
+        self.x, self.y = x, y
+        self.camera = 0
+
+    def set_camera(self, c):
+        self.camera = c
+
+    def draw(self):
+        self.image.draw(self.x - self.camera, self.y)
 
 class Pipe:
     def __init__(self, x):
@@ -82,3 +101,21 @@ class Coin:
     def draw(self):
         self.image.clip_draw(120 * (self.frame // 10), 0, 120, 115, self.x - self.camera, self.y, self.w, self.h)
         draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+
+class Ax:
+    def __init__(self, x, y):
+        self.image = load_image('ax.png')
+        self.x, self.y = x, y
+        self.w, self.h = 50, 50
+        self.camera = 0
+
+    def set_camera(self, c):
+        self.camera = c
+
+    def get_bb(self):
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
+    def draw(self):
+        self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera,
+                       self.y + self.h / 2)

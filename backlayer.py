@@ -29,6 +29,13 @@ class Grass:
     def draw(self, x):
         self.image.draw(x, 105)
 
+class Fire:
+    def __init__(self):
+        self.image = load_image('fire.png')
+
+    def draw(self, x):
+        self.image.draw(x, 40)
+
 # class Mountain:
 #     def __init__(self):
 #         self.image = load_image('')

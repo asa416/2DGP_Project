@@ -3,6 +3,7 @@ import game_framework
 import stage1
 import stage2
 import stage3
+import bossStage
 
 name = "WolrdMap"
 image = None
@@ -52,7 +53,8 @@ def handle_events():
                     game_framework.change_state(stage2)
                 elif stage_index == 3:
                     game_framework.change_state(stage3)
-
+                else:
+                    game_framework.change_state(bossStage)
 def update():
     delay(0.01)
 

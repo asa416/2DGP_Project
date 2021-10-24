@@ -55,24 +55,29 @@ class Boss:
     def __init__(self):
         self.image = load_image('boss.png')
         self.x = 600
-        self.y = 95
+        self.y = 165
+        self.w, self.h = 80, 80
         self.frame = 0
         self.dir = 1
         self.speed = 1
+        self.camera = 0
 
-    def findCharacter(self, x):
-        if self.x < x:
+    def set_camera(self, c):
+        self.camera = c
+
+    def findCharacter(self):
+        if self.x - self.camera < 400:
             self.dir = 1
         else:
             self.dir = -1
 
-    def update(self, x):
-        self.findCharacter(x)
-        self.x += self.dir * self.speed
+    def update(self):
+        self.findCharacter()
+        # self.x += self.dir * self.speed
         self.frame = (self.frame + 1) % 40
 
     def draw(self):
         if self.dir == 1:
-            self.image.clip_draw(80 * (self.frame // 10), 40, 80, 70, self.x, self.y)
+            self.image.clip_draw(80 * (self.frame // 10), 40, 80, 70, self.x - self.camera, self.y, self.w, self.h)
         else:
-            self.image.clip_draw(80 * (self.frame // 10), 150, 80, 70, self.x, self.y)
+            self.image.clip_draw(80 * (self.frame // 10), 150, 80, 70, self.x - self.camera, self.y, self.w, self.h)
