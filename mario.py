@@ -1,8 +1,11 @@
 from pico2d import *
+# import time
 
-g = -1
+g = -10
 MAX_SPEED = 8
 ACCEL = 0.2
+MAX_JUMP = 10
+JUMP_TIME = 0
 
 class Mario:
     def __init__(self, x, y):
@@ -18,6 +21,7 @@ class Mario:
         self.t = 0
         self.camera = 0
         self.w, self.h = 50, 50
+        self.ySpeed = 0
 
     def update(self):
         if self.dir != 0:
@@ -29,12 +33,10 @@ class Mario:
                 self.x = 20
             self.frame = (self.frame + 1) % 40
         if self.jump:
-            ySpeed = 5
-            self.y = self.y + ySpeed * self.t + (g * self.t * self.t) / 2
-            self.t += 0.4
-            if self.y < self.oldy:
-                self.y = self.oldy
-                self.jump = False
+            self.y = self.y + self.ySpeed * self.t + (g * self.t * self.t) / 2
+            self.t += 0.1
+            print(self.y)
+
 
     def get_bb(self):
         return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
@@ -48,7 +50,13 @@ class Mario:
     def set_camera(self, c):
         self.camera = c
 
+    def check_stand(self, stand, y):
+        if stand:
+            self.jump = False
+            self.y = y + self.h / 2
+
     def handleEvent(self, e):
+        global JUMP_TIME
         if e.type == SDL_KEYDOWN:
             if e.key == SDLK_LEFT:
                 self.dir -= 1
@@ -56,9 +64,11 @@ class Mario:
                 self.dir += 1
             elif e.key == SDLK_UP:
                 if self.jump == False:
+                    self.ySpeed = 15
                     self.jump = True
                     self.t = 0
                     self.oldy = self.y
+                # JUMP_TIME = time.time()
         elif e.type == SDL_KEYUP:
             if e.key == SDLK_LEFT:
                 self.dir += 1
@@ -68,6 +78,16 @@ class Mario:
                 self.speed = 1
                 self.dir -= 1
                 self.running = False
+            elif e.key == SDLK_UP:
+                pass
+                # JUMP_TIME = time.time() - JUMP_TIME
+                # print(JUMP_TIME)
+                # self.ySpeed = JUMP_TIME * 30
+                # if self.ySpeed > MAX_JUMP:
+                    # self.ySpeed = MAX_JUMP
+                # self.oldy = self.y
+                # self.t = 0
+                # self.jump = True
 
 
     def draw(self):

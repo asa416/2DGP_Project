@@ -65,7 +65,7 @@ class Pipe:
     def __init__(self, x):
         self.image = load_image('pipeline.png')
         self.x = x
-        self.y = 70
+        self.y = 160
         self.xsize, self.ysize = 66, 140
         self.camera = 0
 
@@ -84,10 +84,16 @@ class Coin:
     w, h = 30, 30
     camera = 0
     frame = 0
+    state = 0 # 0 small 1 big
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, s):
         self.image = load_image('coin.png')
         self.x, self.y = x, y
+        self.state = s
+        if self.state == 0:
+            self.w, self.h = 30, 30
+        else:
+            self.w, self.h = 50, 50
 
     def set_camera(self, c):
         self.camera = c

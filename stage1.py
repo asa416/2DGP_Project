@@ -9,6 +9,7 @@ name = "Stage1"
 char = None
 mapdata = None
 camera = 0
+clear = False
 
 def enter():
     global char
@@ -36,10 +37,28 @@ def handle_events():
             elif event.key == SDLK_LEFT:
                 pass
 
+def collide(a, b):
+    la, ba, ra, ta = a.get_bb()
+    lb, bb, rb, tb = b.get_bb()
+
+    if la > rb: return False
+    if ra < lb: return False
+    if ta < ba: return False
+    if ba > tb: return False
+
+    return True
+
+def stand(a, y):
+    la, ba, ra, ta = a.get_bb()
+
+    if ba < y: return True
+    return False
+
 def update():
     global camera
     mapdata.update()
     char.update()
+    char.check_stand(stand(char, 90), 90)
     cx = char.get_x()
     cdx = char.get_speed()
     if cx - camera > 400:

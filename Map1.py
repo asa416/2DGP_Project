@@ -30,7 +30,7 @@ class Map1:
         self.turtles = [enemy.Turtle(turtlePos[i], 115) for i in range(len(turtlePos))]
         self.block2s = [object.UneasyBlock(block2Pos[i], 250) for i in range(len(block2Pos))]
         self.pipes = [object.Pipe(pipePos[i]) for i in range(len(pipePos))]
-        self.coins = [object.Coin(coinPos[i], 300) for i in range(len(coinPos))]
+        self.coins = [object.Coin(coinPos[i], 300, 1) for i in range(len(coinPos))]
 
     def set_camera(self, c):
         self.camera = c
@@ -44,6 +44,10 @@ class Map1:
             pipe.set_camera(self.camera)
         for coin in self.coins:
             coin.set_camera(self.camera)
+
+    def get_bb(self):
+        for goom in self.gooms:
+            goom.get_bb()
 
     def update(self):
         for goom in self.gooms:
