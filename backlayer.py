@@ -1,13 +1,5 @@
 from pico2d import *
 
-class GroundBlock:
-    def __init__(self):
-        self.image = load_image('block.png')
-
-    def draw(self, x):
-        self.image.draw(x, 15, 50, 50)
-        self.image.draw(x, 65, 50, 50)
-
 class Tree:
     def __init__(self):
         self.image = load_image('tree.png')

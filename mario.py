@@ -35,7 +35,7 @@ class Mario:
         if self.jump:
             self.y = self.y + self.ySpeed * self.t + (g * self.t * self.t) / 2
             self.t += 0.1
-            print(self.y)
+            #print(self.y)
 
 
     def get_bb(self):

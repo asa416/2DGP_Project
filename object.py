@@ -20,6 +20,24 @@ class Block:
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
         draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
 
+class GroundBlock:
+    def __init__(self, x):
+        self.image = load_image('block.png')
+        self.x, self.y = x, 65
+        self.w, self.h = 50, 50
+        self.camera = 0
+
+    def set_camera(self, c):
+        self.camera = c
+
+    def get_bb(self):
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
+    def draw(self):
+        self.image.draw(self.x - self.camera, self.y - 50, self.w, self.h)
+        self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+
 class RandomBox(Block):
     def __init__(self, x, y):
         self.image = load_image('randombox.png')

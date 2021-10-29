@@ -48,6 +48,7 @@ def collide(a, b):
 
     return True
 
+
 def stand(a, y):
     la, ba, ra, ta = a.get_bb()
 
@@ -58,7 +59,7 @@ def update():
     global camera
     mapdata.update()
     char.update()
-    char.check_stand(stand(char, 90), 90)
+    char.check_stand(stand(char, 90), 91)
     cx = char.get_x()
     cdx = char.get_speed()
     if cx - camera > 400:
@@ -67,6 +68,9 @@ def update():
         camera -= cdx
     char.set_camera(camera)
     mapdata.set_camera(camera)
+    for gb in mapdata.get_ground():
+        if collide(char, gb):
+            print('gb')
     delay(0.01)
 
 def draw():

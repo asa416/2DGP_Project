@@ -17,7 +17,7 @@ coinPos = [500, 550, 600, 650]
 class Map1:
     def __init__(self):
         self.groundNum = len(grounds)
-        self.groundblock = backlayer.GroundBlock()
+        self.groundblock = [object.GroundBlock(grounds[i]) for i in range(self.groundNum)]
         self.back = back.Back()
         self.background = load_image('sky.png')
         self.tree = backlayer.Tree()
@@ -32,6 +32,9 @@ class Map1:
         self.pipes = [object.Pipe(pipePos[i]) for i in range(len(pipePos))]
         self.coins = [object.Coin(coinPos[i], 300, 1) for i in range(len(coinPos))]
 
+    def get_ground(self):
+        return self.groundblock
+
     def set_camera(self, c):
         self.camera = c
         for goom in self.gooms:
@@ -44,6 +47,8 @@ class Map1:
             pipe.set_camera(self.camera)
         for coin in self.coins:
             coin.set_camera(self.camera)
+        for gb in self.groundblock:
+            gb.set_camera(self.camera)
 
     def get_bb(self):
         for goom in self.gooms:
@@ -65,8 +70,8 @@ class Map1:
         for i in range(self.grassNum):
             self.grass.draw(grassPos[i] - self.camera)
         self.goalin.draw(9600 - self.camera)
-        for i in range(self.groundNum):
-            self.groundblock.draw(grounds[i] - self.camera)
+        for gb in self.groundblock:
+            gb.draw()
         for goom in self.gooms:
             goom.draw()
         for turtle in self.turtles:
@@ -82,10 +87,11 @@ class Map1:
 if __name__ == '__main__':
     open_canvas()
     num = len(grounds)
-    groundblock = backlayer.GroundBlock()
+    # groundblock = backlayer.GroundBlock()
 
     while True:
         clear_canvas()
         for i in range(num):
-            groundblock.draw(grounds[i][0])
+            pass
+            # groundblock.draw(grounds[i][0])
         update_canvas()
