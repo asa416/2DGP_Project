@@ -23,7 +23,7 @@ class Block:
 class GroundBlock:
     def __init__(self, x):
         self.image = load_image('block.png')
-        self.x, self.y = x, 65
+        self.x, self.y = x, 50
         self.w, self.h = 50, 50
         self.camera = 0
 

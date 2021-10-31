@@ -1,7 +1,6 @@
 import mario
 import enemy
 import object
-import back
 import game_framework
 import world
 import Map1

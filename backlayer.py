@@ -28,6 +28,9 @@ class Fire:
     def draw(self, x):
         self.image.draw(x, 40)
 
-# class Mountain:
-#     def __init__(self):
-#         self.image = load_image('')
+class Cloud:
+    def __init__(self):
+        self.image = load_image('back.png')
+
+    def draw(self, x):
+        self.image.clip_draw(100, 365, 100, 60, x, 400)

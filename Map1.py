@@ -1,36 +1,29 @@
 from pico2d import *
-from ground import grounds
+#from ground import grounds
 import object
-import back
 import backlayer
 import enemy
+import stage1pos as Pos1
 
 
-treePos = [100, 600, 1100, 1800]
-grassPos = [150, 650, 1150, 1850]
-goomPos = [300, 3000, 3300, 6000, 7000, 7300, 8000]
-turtlePos = [1000, 1100, 2300, 2400, 5500, 7500]
-block2Pos = [500, 550, 600, 650]
-pipePos = [3000, 5200]
-coinPos = [500, 550, 600, 650]
 
 class Map1:
     def __init__(self):
-        self.groundNum = len(grounds)
-        self.groundblock = [object.GroundBlock(grounds[i]) for i in range(self.groundNum)]
-        self.back = back.Back()
+        self.groundNum = len(Pos1.grounds)
+        self.groundblock = [object.GroundBlock(Pos1.grounds[i]) for i in range(self.groundNum)]
         self.background = load_image('sky.png')
-        self.tree = backlayer.Tree()
-        self.grass = backlayer.Grass()
-        self.goalin = backlayer.GoalIn()
+        # self.tree = backlayer.Tree()
+        # self.grass = backlayer.Grass()
+        # self.goalin = backlayer.GoalIn()
         self.camera = 0
-        self.treeNum = len(treePos)
-        self.grassNum = len(grassPos)
-        self.gooms = [enemy.Goom(goomPos[i], 105) for i in range(len(goomPos))]
-        self.turtles = [enemy.Turtle(turtlePos[i], 115) for i in range(len(turtlePos))]
-        self.block2s = [object.UneasyBlock(block2Pos[i], 250) for i in range(len(block2Pos))]
-        self.pipes = [object.Pipe(pipePos[i]) for i in range(len(pipePos))]
-        self.coins = [object.Coin(coinPos[i], 300, 1) for i in range(len(coinPos))]
+        # self.treeNum = len(treePos)
+        # self.grassNum = len(grassPos)
+        self.gooms = [enemy.Goom(Pos1.goomPos[i], 105) for i in range(len(Pos1.goomPos))]
+        self.turtles = [enemy.Turtle(Pos1.turtlePos[i], 115) for i in range(len(Pos1.turtlePos))]
+        self.block2s = [object.UneasyBlock(Pos1.blockPos250[i], 250) for i in range(len(Pos1.blockPos250))]
+        self.obstacleBlock = [object.UneasyBlock(Pos1.obstaclePos[i][0], Pos1.obstaclePos[i][1]) for i in range(len(Pos1.obstaclePos))]
+        self.pipes = [object.Pipe(Pos1.pipePos[i]) for i in range(len(Pos1.pipePos))]
+        self.coins = [object.Coin(Pos1.coinPos[i][0], Pos1.coinPos[i][1], 1) for i in range(len(Pos1.coinPos))]
 
     def get_ground(self):
         return self.groundblock
@@ -43,6 +36,8 @@ class Map1:
             turtle.set_camera(self.camera)
         for block2 in self.block2s:
             block2.set_camera(self.camera)
+        for obs in self.obstacleBlock:
+            obs.set_camera(self.camera)
         for pipe in self.pipes:
             pipe.set_camera(self.camera)
         for coin in self.coins:
@@ -61,24 +56,25 @@ class Map1:
             turtle.update()
         for coin in self.coins:
             coin.update()
-        self.back.update()
+
 
     def draw(self):
         self.background.draw(400, 300, 800, 600)
-        for i in range(self.treeNum):
-            self.tree.draw(treePos[i] - self.camera)
-        for i in range(self.grassNum):
-            self.grass.draw(grassPos[i] - self.camera)
-        self.goalin.draw(9600 - self.camera)
+        # for i in range(self.treeNum):
+        #     self.tree.draw(treePos[i] - self.camera)
+        # for i in range(self.grassNum):
+        #     self.grass.draw(grassPos[i] - self.camera)
+        # self.goalin.draw(9600 - self.camera)
         for gb in self.groundblock:
             gb.draw()
         for goom in self.gooms:
             goom.draw()
         for turtle in self.turtles:
             turtle.draw()
-        self.back.draw()
         for block2 in self.block2s:
             block2.draw()
+        for obs in self.obstacleBlock:
+            obs.draw()
         for pipe in self.pipes:
             pipe.draw()
         for coin in self.coins:
@@ -86,12 +82,12 @@ class Map1:
 
 if __name__ == '__main__':
     open_canvas()
-    num = len(grounds)
+    # num = len(grounds)
     # groundblock = backlayer.GroundBlock()
 
     while True:
         clear_canvas()
-        for i in range(num):
-            pass
+        # for i in range(num):
+        #     pass
             # groundblock.draw(grounds[i][0])
         update_canvas()
