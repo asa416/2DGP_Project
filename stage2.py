@@ -3,31 +3,31 @@ import enemy
 import object
 import game_framework
 import world
-import Map1
+import Map2
 
 from pico2d import *
 
-name = "Stage1"
-mario
+name = "Stage2"
+char = None
 mapdata = None
 camera = 0
 
 def enter():
-    global mario
-    # global mapdata
-    mario = mario.Mario(100, 110)
-    # mapdata = Map1.Map1()
+    global char
+    global mapdata
+    char = mario.Mario(100, 100)
+    mapdata = Map2.Map2()
 
 def exit():
-    global mario
-    # global mapdata
-    del(mario)
-    # del(mapdata)
+    global char
+    global mapdata
+    del(char)
+    del(mapdata)
 
 def handle_events():
     events = get_events()
     for event in events:
-        mario.handleEvent(event)
+        char.handleEvent(event)
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN:
@@ -38,22 +38,22 @@ def handle_events():
 
 def update():
     global camera
-    # mapdata.update()
-    mario.update()
-    cx = mario.get_x()
-    cdx = mario.get_speed()
+    mapdata.update()
+    char.update()
+    cx = char.get_x()
+    cdx = char.get_speed()
     if cx - camera > 400:
         camera += cdx
     if cx - camera < 400 and camera > 0:
         camera -= cdx
-    mario.set_camera(camera)
-    # mapdata.set_camera(camera)
+    char.set_camera(camera)
+    mapdata.set_camera(camera)
     delay(0.01)
 
 def draw():
     clear_canvas()
-    # mapdata.draw()
-    mario.draw()
+    mapdata.draw()
+    char.draw()
     update_canvas()
 
 

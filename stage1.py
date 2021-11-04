@@ -14,7 +14,7 @@ clear = False
 def enter():
     global char
     global mapdata
-    char = mario.Mario(100, 110)
+    char = mario.Mario(100, 100)
     mapdata = Map1.Map1()
 
 def exit():
@@ -59,7 +59,7 @@ def update():
     global camera
     mapdata.update()
     char.update()
-    char.check_stand(stand(char, 90), 91)
+    # char.check_stand(stand(char, 90), 91)
     cx = char.get_x()
     cdx = char.get_speed()
     if cx - camera > 400:

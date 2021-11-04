@@ -3,14 +3,14 @@ from pico2d import *
 import object
 import backlayer
 import enemy
-import stage1pos as Pos1
+import stage2pos as Pos2
 
 
 
-class Map1:
+class Map2:
     def __init__(self):
-        self.groundNum = len(Pos1.grounds)
-        self.groundblock = [object.GroundBlock(Pos1.grounds[i]) for i in range(self.groundNum)]
+        self.groundNum = len(Pos2.grounds)
+        self.groundblock = [object.GroundBlock(Pos2.grounds[i]) for i in range(self.groundNum)]
         self.background = load_image('sky.png')
         # self.tree = backlayer.Tree()
         # self.grass = backlayer.Grass()
@@ -18,12 +18,12 @@ class Map1:
         self.camera = 0
         # self.treeNum = len(treePos)
         # self.grassNum = len(grassPos)
-        self.gooms = [enemy.Goom(Pos1.goomPos[i], 100) for i in range(len(Pos1.goomPos))]
-        self.turtles = [enemy.Turtle(Pos1.turtlePos[i], 100) for i in range(len(Pos1.turtlePos))]
-        self.block2s = [object.UneasyBlock(Pos1.blockPos250[i], 250) for i in range(len(Pos1.blockPos250))]
-        self.obstacleBlock = [object.UneasyBlock(Pos1.obstaclePos[i][0], Pos1.obstaclePos[i][1]) for i in range(len(Pos1.obstaclePos))]
-        self.pipes = [object.Pipe(Pos1.pipePos[i]) for i in range(len(Pos1.pipePos))]
-        self.coins = [object.Coin(Pos1.coinPos[i][0], Pos1.coinPos[i][1], 1) for i in range(len(Pos1.coinPos))]
+        self.gooms = [enemy.Goom(Pos2.goomPos[i], 100) for i in range(len(Pos2.goomPos))]
+        self.turtles = [enemy.Turtle(Pos2.turtlePos[i], 100) for i in range(len(Pos2.turtlePos))]
+        self.block2s = [object.UneasyBlock(Pos2.blockPos250[i], 250) for i in range(len(Pos2.blockPos250))]
+        # self.obstacleBlock = [object.UneasyBlock(Pos2.obstaclePos[i][0], Pos2.obstaclePos[i][1]) for i in range(len(Pos2.obstaclePos))]
+        self.pipes = [object.Pipe(Pos2.pipePos[i]) for i in range(len(Pos2.pipePos))]
+        self.coins = [object.Coin(Pos2.coinPos[i][0], Pos2.coinPos[i][1], 1) for i in range(len(Pos2.coinPos))]
 
     def get_ground(self):
         return self.groundblock
@@ -36,8 +36,8 @@ class Map1:
             turtle.set_camera(self.camera)
         for block2 in self.block2s:
             block2.set_camera(self.camera)
-        for obs in self.obstacleBlock:
-            obs.set_camera(self.camera)
+        # for obs in self.obstacleBlock:
+        #     obs.set_camera(self.camera)
         for pipe in self.pipes:
             pipe.set_camera(self.camera)
         for coin in self.coins:
@@ -73,8 +73,8 @@ class Map1:
             turtle.draw()
         for block2 in self.block2s:
             block2.draw()
-        for obs in self.obstacleBlock:
-            obs.draw()
+        # for obs in self.obstacleBlock:
+        #     obs.draw()
         for pipe in self.pipes:
             pipe.draw()
         for coin in self.coins:

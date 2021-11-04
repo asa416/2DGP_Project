@@ -21,11 +21,15 @@ class Block:
         draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
 
 class GroundBlock:
+    image = None
+
     def __init__(self, x):
-        self.image = load_image('block.png')
+        # self.image = load_image('block.png')
         self.x, self.y = x, 50
         self.w, self.h = 50, 50
         self.camera = 0
+        if GroundBlock.image == None:
+            GroundBlock.image = load_image('block.png')
 
     def set_camera(self, c):
         self.camera = c
