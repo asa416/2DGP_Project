@@ -29,7 +29,7 @@ class GroundBlock:
         self.w, self.h = 50, 50
         self.camera = 0
         if GroundBlock.image == None:
-            GroundBlock.image = load_image('block.png')
+            GroundBlock.image = load_image('./image/block.png')
 
     def set_camera(self, c):
         self.camera = c
@@ -44,7 +44,7 @@ class GroundBlock:
 
 class RandomBox(Block):
     def __init__(self, x, y):
-        self.image = load_image('randombox.png')
+        self.image = load_image('./image/randombox.png')
         self.x, self.y = x, y
         state = True
         self.num = 1
@@ -56,24 +56,24 @@ class RandomBox(Block):
 
 class UneasyBlock(Block):
     def __init__(self, x, y):
-        self.image = load_image('block2.png')
+        self.image = load_image('./image/block2.png')
         self.x, self.y = x, y
         self.frame = 0
 
 class EasyBlock(Block):
     def __init__(self, x, y):
-        self.image = load_image('block3.png')
+        self.image = load_image('./image/block3.png')
         self.x, self.y = x, y
 
 class BossBlock(Block):
     def __init__(self, x, y):
-        self.image = load_image('bossblock.png')
+        self.image = load_image('./image/bossblock.png')
         self.w, self.h = 30, 50
         self.x, self.y = x, y
 
 class BossGround:
     def __init__(self, x, y):
-        self.image = load_image('bossground.png')
+        self.image = load_image('./image/bossground.png')
         self.x, self.y = x, y
         self.camera = 0
 
@@ -85,7 +85,7 @@ class BossGround:
 
 class Pipe:
     def __init__(self, x):
-        self.image = load_image('pipeline.png')
+        self.image = load_image('./image/pipeline.png')
         self.x = x
         self.y = 160
         self.xsize, self.ysize = 66, 140
@@ -109,7 +109,7 @@ class Coin:
     state = 0 # 0 small 1 big
 
     def __init__(self, x, y, s):
-        self.image = load_image('coin.png')
+        self.image = load_image('./image/coin.png')
         self.x, self.y = x, y
         self.state = s
         if self.state == 0:
@@ -132,7 +132,7 @@ class Coin:
 
 class Ax:
     def __init__(self, x, y):
-        self.image = load_image('ax.png')
+        self.image = load_image('./image/ax.png')
         self.x, self.y = x, y
         self.w, self.h = 50, 50
         self.camera = 0

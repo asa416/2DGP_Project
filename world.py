@@ -16,8 +16,8 @@ def enter():
     global mario
     global stage_list
     global stage_index
-    mario = load_image('mario.png')
-    image = load_image('map.png')
+    mario = load_image('./image/mario.png')
+    image = load_image('./image/map.png')
     stage_index = 0
     stage_list.append((100, 600 - 170))
     stage_list.append((210, 600 - 60))

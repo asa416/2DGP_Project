@@ -3,7 +3,7 @@ from pico2d import *
 class Turtle:
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.image = load_image('turtle.png')
+        self.image = load_image('./image/turtle.png')
         self.frame = 0
         self.x_max, self.x_min = self.x + 50, self.x - 50
         self.dir = 1
@@ -27,7 +27,7 @@ class Turtle:
 class Goom:
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.image = load_image('goom.png')
+        self.image = load_image('./image/goom.png')
         self.frame = 0
         self.dir = 1
         self.x_max = self.x + 50
@@ -53,7 +53,7 @@ class Goom:
         draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
 class Boss:
     def __init__(self):
-        self.image = load_image('boss.png')
+        self.image = load_image('./image/boss.png')
         self.x = 600
         self.y = 165
         self.w, self.h = 80, 80

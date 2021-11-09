@@ -11,7 +11,7 @@ class Map1:
     def __init__(self):
         self.groundNum = len(Pos1.grounds)
         self.groundblock = [object.GroundBlock(Pos1.grounds[i]) for i in range(self.groundNum)]
-        self.background = load_image('sky.png')
+        self.background = load_image('./image/sky.png')
         # self.tree = backlayer.Tree()
         # self.grass = backlayer.Grass()
         # self.goalin = backlayer.GoalIn()

@@ -1,3 +1,4 @@
+import game_world
 import mario
 import game_framework
 import world
@@ -14,16 +15,12 @@ clear = False
 def enter():
     global char
     global mapdata
-    char = mario.Mario(100, 100)
+    char = mario.Mario()
     mapdata = Map1.Map1()
+    game_world.add_object(char, 1)
 
 def exit():
-    global char
-    global mapdata
-    global camera
-    del(char)
-    del(mapdata)
-    camera = 0
+    game_world.clear()
 
 def handle_events():
     events = get_events()
@@ -56,27 +53,30 @@ def stand(a, y):
     return False
 
 def update():
-    global camera
-    mapdata.update()
-    char.update()
-    # char.check_stand(stand(char, 90), 91)
-    cx = char.get_x()
-    cdx = char.get_speed()
-    if cx - camera > 400:
-        camera += cdx
-    if cx - camera < 400 and camera > 0:
-        camera -= cdx
-    char.set_camera(camera)
-    mapdata.set_camera(camera)
-    for gb in mapdata.get_ground():
-        if collide(char, gb):
-            print('gb')
-    delay(0.01)
+    for game_object in game_world.all_objects():
+        game_object.draw()
+
+    # global camera
+    # mapdata.update()
+    # char.update()
+    # # char.check_stand(stand(char, 90), 91)
+    # cx = char.get_x()
+    # cdx = char.get_speed()
+    # if cx - camera > 400:
+    #     camera += cdx
+    # if cx - camera < 400 and camera > 0:
+    #     camera -= cdx
+    # char.set_camera(camera)
+    # mapdata.set_camera(camera)
+    # for gb in mapdata.get_ground():
+    #     if collide(char, gb):
+    #         print('gb')
+    # delay(0.01)
 
 def draw():
     clear_canvas()
-    mapdata.draw()
-    char.draw()
+    for game_object in game_world.all_objects():
+        game_object.draw()
     update_canvas()
 
 

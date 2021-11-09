@@ -1,5 +1,58 @@
 from pico2d import *
+import game_world
 # import time
+
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SPACE = range(5)
+
+key_event_table = {
+    (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
+    (SDL_KEYDOWN, SDLK_LEFT): LEFT_DOWN,
+    (SDL_KEYUP, SDLK_RIGHT): RIGHT_UP,
+    (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
+    (SDL_KEYDOWN, SDLK_SPACE): SPACE
+}
+
+class IdleState:
+    def enter(Mario, event):
+        pass
+
+    def exit(Mario, event):
+        pass
+
+    def do(Mario):
+        pass
+
+    def draw(Mario):
+        pass
+
+
+class RunState:
+    def enter(Mario, event):
+        pass
+
+    def exit(Mario, event):
+        pass
+
+    def do(Mario):
+        pass
+
+    def draw(Mario):
+        pass
+
+
+class JumpState:
+    def enter(Mario, event):
+        pass
+
+    def exit(Mario, event):
+        pass
+
+    def do(Mario):
+        pass
+
+    def draw(Mario):
+        pass
+
 
 g = -10
 MAX_SPEED = 8
@@ -7,16 +60,18 @@ ACCEL = 0.2
 MAX_JUMP = 10
 JUMP_TIME = 0
 
+
 class Mario:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.image = load_image('mario.png')
+    def __init__(self):
+        self.x = 100
+        self.y = 100
+        self.image = load_image("./image/mario.png")
         self.frame = 0
         self.running = False
-        self.oldx, self.oldy = x, y
-        self.dir = 0
-        self.speed = 1
+        self.oldx, self.oldy = self.x, self.y
+        self.dir = 1
+        self.velocity = 0
+        self.fram = 0
         self.jump = False
         self.t = 0
         self.camera = 0
@@ -24,6 +79,9 @@ class Mario:
         self.ySpeed = 0
 
     def update(self):
+        self.cur_state.do(self)
+        if len(self.event_que) > 0:
+            event = self.event_que.pop()
         if self.dir != 0:
             self.running = True
             if self.speed < MAX_SPEED:
