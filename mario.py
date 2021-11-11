@@ -1,6 +1,15 @@
 from pico2d import *
-import game_world
+import game_framework
+# import game_world
 # import time
+
+PIXEL_PER_METER = (10.0 / 0.1)
+RUN_SPEED_KMPH = 15.0
+RUN_SPEED_PPS = (RUN_SPEED_KMPH * 1000.0 / 60.0 / 60.0 * PIXEL_PER_METER)
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SPACE = range(5)
 
@@ -14,13 +23,20 @@ key_event_table = {
 
 class IdleState:
     def enter(Mario, event):
-        pass
+        if event == RIGHT_DOWN:
+            Mario.velocity += RUN_SPEED_PPS
+        elif event == LEFT_DOWN:
+            Mario.velocity -= RUN_SPEED_PPS
+        elif event == RIGHT_UP:
+            Mario.velocity -= RUN_SPEED_PPS
+        elif event == LEFT_UP:
+            Mario.velocity += RUN_SPEED_PPS
 
     def exit(Mario, event):
         pass
 
     def do(Mario):
-        pass
+        Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
     def draw(Mario):
         pass
@@ -28,10 +44,19 @@ class IdleState:
 
 class RunState:
     def enter(Mario, event):
-        pass
+        if event == RIGHT_DOWN:
+            Mario.velocity += RUN_SPEED_PPS
+        elif event == LEFT_DOWN:
+            Mario.velocity -= RUN_SPEED_PPS
+        elif event == RIGHT_UP:
+            Mario.velocity -= RUN_SPEED_PPS
+        elif event == LEFT_UP:
+            Mario.velocity += RUN_SPEED_PPS
+        Mario.dir = clamp(-1, Mario.velocity, 1)
 
     def exit(Mario, event):
-        pass
+        Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        Mario.x += Mario.velocity * game_framework.frame_time
 
     def do(Mario):
         pass
