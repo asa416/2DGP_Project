@@ -1,7 +1,10 @@
 
 # layer 0: Background Objects
-# layer 1: Foreground Objects
-objects = [[],[]]
+# layer 1: Obstacle Objects
+# layer 2: Enemy Objects
+# layer 2: Player Objects
+# layer 3: UI
+objects = [[], [], [], []]
 
 
 def add_object(o, layer):
@@ -20,13 +23,12 @@ def remove_object(o):
             break
 
 
-
-
 def clear():
     for o in all_objects():
         del o
     for l in objects:
         l.clear()
+
 
 def destroy():
     clear()

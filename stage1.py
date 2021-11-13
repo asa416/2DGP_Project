@@ -2,28 +2,43 @@ import game_world
 from mario import Mario
 import game_framework
 import world
-import Map1
+import bgdata
+import enemydata
+import obstacledata
 from camera import Camera
-
-import stage1pos
 
 from pico2d import *
 
 name = "Stage1"
 char = None
-mapdata = None
+BG = None
+enemies = None
+obstacles = None
 cam = None
 clear = False
 
 def enter():
     global char
-    global mapdata
+    global BG
     global cam
+    global enemies
+    global obstacles
     char = Mario()
-    mapdata = Map1.Map1()
+    BG = bgdata.Stage1BG()
+    enemies = enemydata.Stage1Enemy()
+    obstacles = obstacledata.Stage1Obstacle()
     cam = Camera()
-    game_world.add_object(char, 1)
-    game_world.add_object(mapdata, 0)
+    game_world.add_object(char, 3)
+    game_world.add_objects(enemies.gooms, 2)
+    game_world.add_objects(enemies.turtles, 2)
+    game_world.add_objects(obstacles.ground, 1)
+    game_world.add_objects(obstacles.block2s, 1)
+    game_world.add_objects(obstacles.block3s, 1)
+    game_world.add_objects(obstacles.obstacleBlock, 1)
+    game_world.add_objects(obstacles.pipes, 1)
+    game_world.add_objects(obstacles.coins, 1)
+    game_world.add_objects(obstacles.randombox, 1)
+    game_world.add_object(BG, 0)
 
 def exit():
     global cam
@@ -40,26 +55,7 @@ def handle_events():
         else:
             char.handleEvent(event)
 
-def collide(a, b):
-    la, ba, ra, ta = a.get_bb()
-    lb, bb, rb, tb = b.get_bb()
-
-    if la > rb: return False
-    if ra < lb: return False
-    if ta < ba: return False
-    if ba > tb: return False
-
-    return True
-
-
-def stand(a, y):
-    la, ba, ra, ta = a.get_bb()
-
-    if ba < y: return True
-    return False
-
 def update():
-    # global char
     global cam
     for game_object in game_world.all_objects():
         game_object.update()
@@ -73,78 +69,8 @@ def update():
     print(cx)
     delay(0.01)
 
-    # global camera
-    # mapdata.update()
-    # char.update()
-    # # char.check_stand(stand(char, 90), 91)
-    # cx = char.get_x()
-    # cdx = char.get_speed()
-    # if cx - camera > 400:
-    #     camera += cdx
-    # if cx - camera < 400 and camera > 0:
-    #     camera -= cdx
-    # char.set_camera(camera)
-    # mapdata.set_camera(camera)
-    # for gb in mapdata.get_ground():
-    #     if collide(char, gb):
-    #         print('gb')
-    # delay(0.01)
-
 def draw():
     clear_canvas()
     for game_object in game_world.all_objects():
         game_object.draw()
     update_canvas()
-
-
-
-# open_canvas()
-# background = load_image('sky.png')
-# pipe = object.Pipe(400, 70)
-# back = back.Back()
-# mario = mario.Mario(400, 80)
-# boss = enemy.Boss()
-# turtle = enemy.Turtle(500, 85)
-# goom = enemy.Goom(300, 75)
-# block_list1 = []
-# for i in range(31):
-#     block_list1.append((i * 30, 15))
-# blocks1 = [object.Block(block_list1[i][0], block_list1[i][1]) for i in range(31)]
-# block_list2 = []
-# for i in range(31):
-#     block_list2.append((i * 30, 45))
-# blocks2 = [object.Block(block_list2[i][0], block_list2[i][1]) for i in range(31)]
-#
-#
-# running = True
-#
-# while running:
-#     handle_events()
-#     turtle.update()
-#     goom.update()
-#     back.update()
-#     mario.update()
-#     x = mario.get_x()
-#     boss.update(x)
-#
-#     clear_canvas()
-#     background.draw(400, 300, 800, 600)
-#     back.draw()
-#     i = 0
-#     for block in blocks1:
-#         block.draw()
-#         i += 1
-#     i = 0
-#     for block in blocks2:
-#         block.draw()
-#         i += 1
-#     pipe.draw()
-#     mario.draw()
-#     boss.draw()
-#     turtle.draw()
-#     goom.draw()
-#     update_canvas()
-#
-#     delay(0.01)
-#
-# close_canvas()

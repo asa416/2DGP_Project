@@ -3,7 +3,7 @@ import enemy
 import object
 import game_framework
 import world
-import Map1
+import bgdata
 
 from pico2d import *
 
@@ -15,7 +15,7 @@ camera = 0
 def enter():
     global mario
     # global mapdata
-    mario = mario.Mario(100, 110)
+    mario = mario.Mario()
     # mapdata = Map1.Map1()
 
 def exit():

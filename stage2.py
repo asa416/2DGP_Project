@@ -1,34 +1,52 @@
+import game_world
 from mario import Mario
-import enemy
-import object
 import game_framework
 import world
-import Map2
-import game_world
+import bgdata
+import enemydata
+import obstacledata
 from camera import Camera
+
 from pico2d import *
 
 name = "Stage2"
 char = None
-mapdata = None
+BG = None
+enemies = None
+obstacles = None
 cam = None
 clear = False
 
+
 def enter():
     global char
-    global mapdata
+    global BG
     global cam
-    cam = Camera()
+    global enemies
+    global obstacles
     char = Mario()
-    mapdata = Map2.Map2()
-    game_world.add_object(char, 1)
-    game_world.add_object(mapdata, 0)
+    BG = bgdata.Stage2BG()
+    enemies = enemydata.Stage2Enemy()
+    obstacles = obstacledata.Stage2Obstacle()
+    cam = Camera()
+    game_world.add_object(char, 3)
+    game_world.add_objects(enemies.gooms, 2)
+    game_world.add_objects(enemies.turtles, 2)
+    game_world.add_objects(obstacles.ground, 1)
+    game_world.add_objects(obstacles.block2s, 1)
+    game_world.add_objects(obstacles.block3s, 1)
+    # game_world.add_objects(obstacles.obstacleBlock, 1)
+    game_world.add_objects(obstacles.pipes, 1)
+    game_world.add_objects(obstacles.coins, 1)
+    game_world.add_objects(obstacles.randombox, 1)
+    game_world.add_object(BG, 0)
 
 
 def exit():
     global cam
     del (cam)
     game_world.clear()
+
 
 def handle_events():
     events = get_events()
@@ -39,6 +57,7 @@ def handle_events():
             game_framework.change_state(world)
         else:
             char.handleEvent(event)
+
 
 def update():
     global cam

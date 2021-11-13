@@ -33,6 +33,9 @@ class GroundBlock:
     def set_camera(self, c):
         self.camera = c
 
+    def update(self):
+        pass
+
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
@@ -43,6 +46,7 @@ class GroundBlock:
 
 class RandomBox:
     image = None
+
     def __init__(self, x, y):
         if RandomBox.image == None:
             RandomBox.image = load_image('./image/randombox.png')
@@ -76,6 +80,9 @@ class UneasyBlock:
 
     def set_camera(self, c):
         self.camera = c
+
+    def update(self):
+        pass
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
@@ -127,6 +134,9 @@ class Pipe:
 
     def set_camera(self, c):
         self.camera = c
+
+    def update(self):
+        pass
 
     def get_bb(self):
         return self.x - self.xsize / 2 - self.camera, self.y - self.ysize / 2, self.x + self.xsize / 2 - self.camera, self.y + self.ysize / 2
