@@ -1,59 +1,63 @@
-import mario
+from mario import Mario
 import enemy
 import object
 import game_framework
 import world
 import Map2
-
+import game_world
+from camera import Camera
 from pico2d import *
 
 name = "Stage2"
 char = None
 mapdata = None
-camera = 0
+cam = None
+clear = False
 
 def enter():
     global char
     global mapdata
-    char = mario.Mario(100, 100)
+    global cam
+    cam = Camera()
+    char = Mario()
     mapdata = Map2.Map2()
+    game_world.add_object(char, 1)
+    game_world.add_object(mapdata, 0)
+
 
 def exit():
-    global char
-    global mapdata
-    del(char)
-    del(mapdata)
+    global cam
+    del (cam)
+    game_world.clear()
 
 def handle_events():
     events = get_events()
     for event in events:
-        char.handleEvent(event)
         if event.type == SDL_QUIT:
             game_framework.quit()
-        elif event.type == SDL_KEYDOWN:
-            if event.key == SDLK_ESCAPE:
-                game_framework.change_state(world)
-            elif event.key == SDLK_LEFT:
-                pass
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            game_framework.change_state(world)
+        else:
+            char.handleEvent(event)
 
 def update():
-    global camera
-    mapdata.update()
-    char.update()
-    cx = char.get_x()
-    cdx = char.get_speed()
-    if cx - camera > 400:
-        camera += cdx
-    if cx - camera < 400 and camera > 0:
-        camera -= cdx
-    char.set_camera(camera)
-    mapdata.set_camera(camera)
-    delay(0.01)
+    global cam
+    for game_object in game_world.all_objects():
+        game_object.update()
+    mx = char.get_x()
+    cx = cam.get_camera()
+    if mx > 400:
+        cx = mx - 400
+    cam.set_camera(cx)
+    for game_object in game_world.all_objects():
+        game_object.set_camera(cx)
+    print(cx)
+    # delay(0.01)
 
 def draw():
     clear_canvas()
-    mapdata.draw()
-    char.draw()
+    for game_object in game_world.all_objects():
+        game_object.draw()
     update_canvas()
 
 

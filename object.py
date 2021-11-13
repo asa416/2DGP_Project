@@ -24,7 +24,6 @@ class GroundBlock:
     image = None
 
     def __init__(self, x):
-        # self.image = load_image('block.png')
         self.x, self.y = x, 50
         self.w, self.h = 50, 50
         self.camera = 0
@@ -42,28 +41,61 @@ class GroundBlock:
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
         draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
 
-class RandomBox(Block):
+class RandomBox:
+    image = None
     def __init__(self, x, y):
-        self.image = load_image('./image/randombox.png')
+        if RandomBox.image == None:
+            RandomBox.image = load_image('./image/randombox.png')
         self.x, self.y = x, y
         state = True
         self.num = 1
+        self.camera = 0
+        self.w, self.h = 50, 50
         # self.item = 1
+
+    def set_camera(self, c):
+        self.camera = c
 
     def update(self):
         if self.num != 0:
             pass
 
-class UneasyBlock(Block):
-    def __init__(self, x, y):
-        self.image = load_image('./image/block2.png')
-        self.x, self.y = x, y
-        self.frame = 0
+    def draw(self):
+        self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
 
-class EasyBlock(Block):
+class UneasyBlock:
+    image = None
     def __init__(self, x, y):
-        self.image = load_image('./image/block3.png')
+        if UneasyBlock.image == None:
+            UneasyBlock.image = load_image('./image/block2.png')
         self.x, self.y = x, y
+        self.w, self.h = 50, 50
+        self.frame = 0
+        self.camera = 0
+
+    def set_camera(self, c):
+        self.camera = c
+
+    def draw(self):
+        self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+
+class EasyBlock:
+    image = None
+    def __init__(self, x, y):
+        if EasyBlock.image == None:
+            EasyBlock.image = load_image('./image/block3.png')
+        self.x, self.y = x, y
+        self.w, self.h = 50, 50
+        self.camera = 0
+
+    def set_camera(self, c):
+        self.camera = c
+
+    def draw(self):
+        self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
 
 class BossBlock(Block):
     def __init__(self, x, y):
@@ -84,10 +116,12 @@ class BossGround:
         self.image.draw(self.x - self.camera, self.y)
 
 class Pipe:
+    image = None
     def __init__(self, x):
-        self.image = load_image('./image/pipeline.png')
+        if Pipe.image == None:
+            Pipe.image = load_image('./image/pipeline.png')
         self.x = x
-        self.y = 160
+        self.y = 145
         self.xsize, self.ysize = 66, 140
         self.camera = 0
 

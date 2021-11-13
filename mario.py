@@ -4,12 +4,14 @@ import game_framework
 # import time
 
 PIXEL_PER_METER = (10.0 / 0.1)
-RUN_SPEED_KMPH = 15.0
-RUN_SPEED_PPS = (RUN_SPEED_KMPH * 1000.0 / 60.0 / 60.0 * PIXEL_PER_METER)
+RUN_SPEED_KMPH = 10.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-TIME_PER_ACTION = 0.5
+TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 8
+FRAMES_PER_ACTION = 4
 
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SPACE = range(5)
 
@@ -39,7 +41,9 @@ class IdleState:
         Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
     def draw(Mario):
-        pass
+        Mario.image.clip_draw(2, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
+        draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2, Mario.x + Mario.w / 2 - Mario.camera,
+                       Mario.y + Mario.h / 2)
 
 
 class RunState:
@@ -55,14 +59,35 @@ class RunState:
         Mario.dir = clamp(-1, Mario.velocity, 1)
 
     def exit(Mario, event):
-        Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-        Mario.x += Mario.velocity * game_framework.frame_time
+        pass
 
     def do(Mario):
-        pass
+        Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+        Mario.x += Mario.velocity * game_framework.frame_time
 
     def draw(Mario):
-        pass
+        if Mario.dir > 0:
+            if int(Mario.frame) < 3:
+                Mario.image.clip_draw(130 + int(Mario.frame) * 35, 339 + 380, 35, 40, Mario.x - Mario.camera, Mario.y,
+                                     Mario.w, Mario.h)
+                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
+                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
+            else:
+                Mario.image.clip_draw(130 + (4 - int(Mario.frame)) * 35, 339 + 380, 35, 40, Mario.x - Mario.camera,
+                                     Mario.y, Mario.w, Mario.h)
+                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
+                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
+        else:
+            if int(Mario.frame) < 3:
+                Mario.image.clip_draw(185 - int(Mario.frame) * 35, 335, 35, 40, Mario.x - Mario.camera, Mario.y, Mario.w,
+                                     Mario.h)
+                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
+                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
+            else:
+                Mario.image.clip_draw(185 - (4 - int(Mario.frame)) * 35, 335, 35, 40, Mario.x - Mario.camera, Mario.y,
+                                     Mario.w, Mario.h)
+                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
+                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
 
 
 class JumpState:
@@ -85,6 +110,11 @@ ACCEL = 0.2
 MAX_JUMP = 10
 JUMP_TIME = 0
 
+next_state_table = {
+    IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState, SPACE: IdleState},
+    RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, SPACE: RunState}
+}
+
 
 class Mario:
     def __init__(self):
@@ -92,34 +122,25 @@ class Mario:
         self.y = 100
         self.image = load_image("./image/mario.png")
         self.frame = 0
-        self.running = False
-        self.oldx, self.oldy = self.x, self.y
         self.dir = 1
         self.velocity = 0
         self.fram = 0
-        self.jump = False
-        self.t = 0
         self.camera = 0
         self.w, self.h = 50, 50
-        self.ySpeed = 0
+        self.event_que = []
+        self.cur_state = IdleState
+        self.cur_state.enter(self, None)
+
+    def add_event(self, event):
+        self.event_que.insert(0, event)
 
     def update(self):
         self.cur_state.do(self)
         if len(self.event_que) > 0:
             event = self.event_que.pop()
-        if self.dir != 0:
-            self.running = True
-            if self.speed < MAX_SPEED:
-                self.speed = self.speed + ACCEL * 0.5
-            self.x += self.dir * self.speed
-            if self.x < 0:
-                self.x = 20
-            self.frame = (self.frame + 1) % 40
-        if self.jump:
-            self.y = self.y + self.ySpeed * self.t + (g * self.t * self.t) / 2
-            self.t += 0.1
-            #print(self.y)
-
+            self.cur_state.exit(self, event)
+            self.cur_state = next_state_table[self.cur_state][event]
+            self.cur_state.enter(self, event)
 
     def get_bb(self):
         return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
@@ -128,108 +149,15 @@ class Mario:
         return self.x
 
     def get_speed(self):
-        return self.speed
+        return self.velocity
 
     def set_camera(self, c):
         self.camera = c
 
-    def check_stand(self, stand, y):
-        if stand:
-            self.jump = False
-            self.y = y + self.h / 2
-
-    def handleEvent(self, e):
-        global JUMP_TIME
-        if e.type == SDL_KEYDOWN:
-            if e.key == SDLK_LEFT:
-                self.dir -= 1
-            elif e.key == SDLK_RIGHT:
-                self.dir += 1
-            elif e.key == SDLK_UP:
-                if self.jump == False:
-                    self.ySpeed = 15
-                    self.jump = True
-                    self.t = 0
-                    self.oldy = self.y
-                # JUMP_TIME = time.time()
-        elif e.type == SDL_KEYUP:
-            if e.key == SDLK_LEFT:
-                self.dir += 1
-                self.speed = 1
-                self.running = False
-            elif e.key == SDLK_RIGHT:
-                self.speed = 1
-                self.dir -= 1
-                self.running = False
-            elif e.key == SDLK_UP:
-                pass
-                # JUMP_TIME = time.time() - JUMP_TIME
-                # print(JUMP_TIME)
-                # self.ySpeed = JUMP_TIME * 30
-                # if self.ySpeed > MAX_JUMP:
-                    # self.ySpeed = MAX_JUMP
-                # self.oldy = self.y
-                # self.t = 0
-                # self.jump = True
-
+    def handleEvent(self, event):
+        if (event.type, event.key) in key_event_table:
+            key_event = key_event_table[(event.type, event.key)]
+            self.add_event(key_event)
 
     def draw(self):
-        if self.jump:
-            if self.dir == 1:
-                self.image.clip_draw(250, 339 + 380, 35, 40, self.x - self.camera, self.y, self.w, self.h)
-                draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2,
-                               self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-            else:
-                self.image.clip_draw(60, 335, 35, 40, self.x - self.camera, self.y, self.w, self.h)
-                draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2,
-                               self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-        elif self.running:
-            if self.dir == 1:
-                if (self.frame // 10) < 3:
-                    self.image.clip_draw(130 + (self.frame // 10) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, self.w, self.h)
-                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-                else:
-                    self.image.clip_draw(130 + (4 - (self.frame // 10)) * 35, 339 + 380, 35, 40, self.x - self.camera, self.y, self.w, self.h)
-                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-            else:
-                if (self.frame // 10) < 3:
-                    self.image.clip_draw(185 - (self.frame // 10) * 35, 335, 35, 40, self.x - self.camera, self.y, self.w, self.h)
-                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-                else:
-                    self.image.clip_draw(185 - (4 - (self.frame // 10)) * 35, 335, 35, 40, self.x - self.camera, self.y, self.w, self.h)
-                    draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-        else:
-            self.image.clip_draw(2, 339 + 380, 40, 40, self.x - self.camera, self.y, self.w, self.h)
-            draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-
-def handle_events():
-    global running
-    events = get_events()
-    for event in events:
-        if event.type == SDL_QUIT:
-            running = False
-        elif event.type == SDL_KEYDOWN:
-            if event.key == SDLK_ESCAPE:
-                running = False
-            elif event.key == SDLK_LEFT:
-                pass
-
-
-running = True
-
-if __name__ == '__main__':
-
-
-    open_canvas()
-    mario = Mario()
-
-    while running:
-        handle_events()
-        mario.update()
-
-        clear_canvas()
-        mario.draw()
-        update_canvas()
-        delay(1)
-
-    close_canvas()
+        self.cur_state.draw(self)

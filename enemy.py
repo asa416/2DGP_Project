@@ -1,46 +1,64 @@
 from pico2d import *
+import game_framework
+
+PIXEL_PER_METER = (10.0 / 0.1)
+ENEMY_SPEED_KMPS = 5.0
+ENEMY_SPEED_PPS = (ENEMY_SPEED_KMPS * 1000.0 / 60.0 / 60.0 * PIXEL_PER_METER)
+
+TIME_PER_ACTION = 0.2
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION_TURTLE = 2
+FRAMES_PER_ACTION_GOOM = 2
 
 class Turtle:
+    image = None
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.image = load_image('./image/turtle.png')
+        if Turtle.image == None:
+            Turtle.image = load_image('./image/turtle.png')
         self.frame = 0
-        self.x_max, self.x_min = self.x + 50, self.x - 50
+        self.velocity = ENEMY_SPEED_PPS
+        self.x_max, self.x_min = self.x + 100, self.x - 100
         self.dir = 1
         self.camera = 0
 
     def update(self):
-        self.x += self.dir
-        self.frame = (self.frame + 1) % 20
+        self.x += self.velocity * game_framework.frame_time
+        self.frame = (self.frame + FRAMES_PER_ACTION_TURTLE * ACTION_PER_TIME * game_framework.frame_time) % 2
         if self.x > self.x_max:
-            self.dir = -1
+            self.velocity *= -1
         elif self.x < self.x_min:
-            self.dir = 1
+            self.velocity *= -1
 
     def set_camera(self, c):
         self.camera = c
 
     def draw(self):
-        self.image.clip_draw(120 + (self.frame // 10) * 60, 135, 60, 60, self.x - self.camera, self.y, 50, 50)
-        draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
-
+        if self.velocity > 0:
+            self.image.clip_composite_draw(120 + int(self.frame) * 60, 135, 60, 60, 0, 'h', self.x - self.camera, self.y, 50, 50)
+            draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+        else:
+            self.image.clip_draw(120 + int(self.frame) * 60, 135, 60, 60, self.x - self.camera, self.y, 50, 50)
+            draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
 class Goom:
+    image = None
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.image = load_image('./image/goom.png')
+        if Goom.image == None:
+            Goom.image = load_image('./image/goom.png')
         self.frame = 0
-        self.dir = 1
-        self.x_max = self.x + 50
-        self.x_min = self.x - 50
+        self.velocity = ENEMY_SPEED_PPS
+        self.x_max = self.x + 100
+        self.x_min = self.x - 100
         self.camera = 0
 
     def update(self):
-        self.x += self.dir * 1
-        self.frame = (self.frame + 1) % 20
+        self.x += self.velocity * game_framework.frame_time
+        self.frame = (self.frame + FRAMES_PER_ACTION_GOOM * ACTION_PER_TIME * game_framework.frame_time) % 2
         if self.x > self.x_max:
-            self.dir = -1
+            self.velocity *= -1
         elif self.x < self.x_min:
-            self.dir = 1
+            self.velocity *= -1
 
     def set_camera(self, c):
         self.camera = c
@@ -49,8 +67,9 @@ class Goom:
         return self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25
 
     def draw(self):
-        self.image.clip_draw((self.frame // 10) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, 50, 50)
+        self.image.clip_draw(int(self.frame) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, 50, 50)
         draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+
 class Boss:
     def __init__(self):
         self.image = load_image('./image/boss.png')

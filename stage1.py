@@ -1,38 +1,44 @@
 import game_world
-import mario
+from mario import Mario
 import game_framework
 import world
 import Map1
+from camera import Camera
+
+import stage1pos
 
 from pico2d import *
 
 name = "Stage1"
 char = None
 mapdata = None
-camera = 0
+cam = None
 clear = False
 
 def enter():
     global char
     global mapdata
-    char = mario.Mario()
+    global cam
+    char = Mario()
     mapdata = Map1.Map1()
+    cam = Camera()
     game_world.add_object(char, 1)
+    game_world.add_object(mapdata, 0)
 
 def exit():
+    global cam
+    del(cam)
     game_world.clear()
 
 def handle_events():
     events = get_events()
     for event in events:
-        char.handleEvent(event)
         if event.type == SDL_QUIT:
             game_framework.quit()
-        elif event.type == SDL_KEYDOWN:
-            if event.key == SDLK_ESCAPE:
-                game_framework.change_state(world)
-            elif event.key == SDLK_LEFT:
-                pass
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            game_framework.change_state(world)
+        else:
+            char.handleEvent(event)
 
 def collide(a, b):
     la, ba, ra, ta = a.get_bb()
@@ -53,8 +59,19 @@ def stand(a, y):
     return False
 
 def update():
+    # global char
+    global cam
     for game_object in game_world.all_objects():
-        game_object.draw()
+        game_object.update()
+    mx = char.get_x()
+    cx = cam.get_camera()
+    if mx > 400:
+        cx = mx - 400
+    cam.set_camera(cx)
+    for game_object in game_world.all_objects():
+        game_object.set_camera(cx)
+    print(cx)
+    delay(0.01)
 
     # global camera
     # mapdata.update()

@@ -20,7 +20,7 @@ class Map1:
         # self.grassNum = len(grassPos)
         self.gooms = [enemy.Goom(Pos1.goomPos[i], 100) for i in range(len(Pos1.goomPos))]
         self.turtles = [enemy.Turtle(Pos1.turtlePos[i], 100) for i in range(len(Pos1.turtlePos))]
-        self.block2s = [object.UneasyBlock(Pos1.blockPos250[i], 250) for i in range(len(Pos1.blockPos250))]
+        self.block2s = [object.UneasyBlock(Pos1.blockPos200[i], 200) for i in range(len(Pos1.blockPos200))]
         self.obstacleBlock = [object.UneasyBlock(Pos1.obstaclePos[i][0], Pos1.obstaclePos[i][1]) for i in range(len(Pos1.obstaclePos))]
         self.pipes = [object.Pipe(Pos1.pipePos[i]) for i in range(len(Pos1.pipePos))]
         self.coins = [object.Coin(Pos1.coinPos[i][0], Pos1.coinPos[i][1], 1) for i in range(len(Pos1.coinPos))]
