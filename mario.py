@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 # import game_world
 # import time
+import timer
 
 PIXEL_PER_METER = (10.0 / 0.1)
 RUN_SPEED_KMPH = 100.0 # 10.0 test more
@@ -41,9 +42,13 @@ class IdleState:
         Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
 
     def draw(Mario):
-        Mario.image.clip_draw(2, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
-        draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2, Mario.x + Mario.w / 2 - Mario.camera,
+        if Mario.dir > 0:
+            Mario.image.clip_draw(2, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
+            draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2, Mario.x + Mario.w / 2 - Mario.camera,
                        Mario.y + Mario.h / 2)
+        else:
+            Mario.image.clip_composite_draw(2, 339 + 380, 40, 40, 0, 'h', Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
+            draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2, Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
 
 
 class RunState:
@@ -121,6 +126,7 @@ class Mario:
         self.x = 100
         self.y = 100
         self.image = load_image("./image/mario.png")
+        self.font = load_font('ENCR10B.TTF', 32)
         self.frame = 0
         self.dir = 1
         self.velocity = 0
@@ -130,11 +136,18 @@ class Mario:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        self.coin = 0
+        self.coinImage = load_image('./image/coin.png')
+        self.timer = timer.TimerObject(5)
+
+    def get_coin(self):
+        self.coin += 1
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
     def update(self):
+        # self.timer.update()
         self.cur_state.do(self)
         if len(self.event_que) > 0:
             event = self.event_que.pop()
@@ -161,3 +174,6 @@ class Mario:
 
     def draw(self):
         self.cur_state.draw(self)
+        self.coinImage.clip_draw(0, 0, 120, 115, 20, get_canvas_height() - 50, 40, 40)
+        self.font.draw(45, get_canvas_height() - 50, 'x%d' % self.coin, (255,255,255))
+        self.timer.draw()

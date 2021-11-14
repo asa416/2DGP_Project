@@ -16,6 +16,7 @@ enemies = None
 obstacles = None
 cam = None
 clear = False
+stagefont = None
 
 def enter():
     global char
@@ -23,6 +24,8 @@ def enter():
     global cam
     global enemies
     global obstacles
+    global stagefont
+    stagefont = load_font('ENCR10B.TTF', 24)
     char = Mario()
     BG = bgdata.Stage1BG()
     enemies = enemydata.Stage1Enemy()
@@ -70,7 +73,9 @@ def update():
     delay(0.01)
 
 def draw():
+    global font
     clear_canvas()
     for game_object in game_world.all_objects():
         game_object.draw()
+    stagefont.draw(get_canvas_width() / 2, get_canvas_height() - 30, name, (255, 255, 255))
     update_canvas()
