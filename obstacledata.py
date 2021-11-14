@@ -11,6 +11,7 @@ class Stage1Obstacle:
         self.pipes = [object.Pipe(Pos1.pipePos[i]) for i in range(len(Pos1.pipePos))]
         self.coins = [object.Coin(Pos1.coinPos[i][0], Pos1.coinPos[i][1], 1) for i in range(len(Pos1.coinPos))]
         self.randombox = [object.RandomBox(Pos1.randomBoxPos[i], 200) for i in range(len(Pos1.randomBoxPos))]
+        self.plag = object.Plag(Pos1.goalinPos)
 
 
 class Stage2Obstacle:
@@ -22,3 +23,4 @@ class Stage2Obstacle:
         self.pipes = [object.Pipe(Pos2.pipePos[i]) for i in range(len(Pos2.pipePos))]
         self.coins = [object.Coin(Pos2.coinPos[i][0], Pos2.coinPos[i][1], 1) for i in range(len(Pos2.coinPos))]
         self.randombox = [object.RandomBox(Pos2.randomBoxPos[i], 200) for i in range(len(Pos2.randomBoxPos))]
+        self.plag = object.Plag(Pos2.goalinPos)

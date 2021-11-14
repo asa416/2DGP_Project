@@ -39,6 +39,7 @@ def enter():
     game_world.add_objects(obstacles.pipes, 1)
     game_world.add_objects(obstacles.coins, 1)
     game_world.add_objects(obstacles.randombox, 1)
+    game_world.add_object(obstacles.plag, 1)
     game_world.add_object(BG, 0)
 
 
