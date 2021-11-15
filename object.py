@@ -115,11 +115,30 @@ class EasyBlock:
         draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
 
 
-class BossBlock(Block):
-    def __init__(self, x, y):
-        self.image = load_image('./image/bossblock.png')
-        self.w, self.h = 30, 50
+class BossBlock:
+    image = None
+
+    def __init__(self, x, y, state):
+        if BossBlock.image == None:
+            BossBlock.image = load_image('./image/bossblock.png')
+        self.w, self.h = 50, 50
         self.x, self.y = x, y
+        self.camera = 0
+        self.state = state
+
+    def set_camera(self, c):
+        self.camera = c
+
+    def update(self):
+        pass
+
+    def draw(self):
+        if self.state == 'floor':
+            for i in range(0, self.y + 1, 50):
+                self.image.draw(self.x - self.camera, i, self.w, self.h)
+        else:
+            for i in range(self.y, get_canvas_height() + 1, 50):
+                self.image.draw(self.x - self.camera, i, self.w, self.h)
 
 
 class BossGround:

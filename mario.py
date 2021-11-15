@@ -44,11 +44,9 @@ class IdleState:
     def draw(Mario):
         if Mario.dir > 0:
             Mario.image.clip_draw(2, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
-            draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2, Mario.x + Mario.w / 2 - Mario.camera,
-                       Mario.y + Mario.h / 2)
         else:
             Mario.image.clip_composite_draw(2, 339 + 380, 40, 40, 0, 'h', Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
-            draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2, Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
+
 
 
 class RunState:
@@ -75,24 +73,17 @@ class RunState:
             if int(Mario.frame) < 3:
                 Mario.image.clip_draw(130 + int(Mario.frame) * 35, 339 + 380, 35, 40, Mario.x - Mario.camera, Mario.y,
                                      Mario.w, Mario.h)
-                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
-                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
             else:
                 Mario.image.clip_draw(130 + (4 - int(Mario.frame)) * 35, 339 + 380, 35, 40, Mario.x - Mario.camera,
                                      Mario.y, Mario.w, Mario.h)
-                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
-                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
         else:
             if int(Mario.frame) < 3:
                 Mario.image.clip_draw(185 - int(Mario.frame) * 35, 335, 35, 40, Mario.x - Mario.camera, Mario.y, Mario.w,
                                      Mario.h)
-                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
-                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
             else:
                 Mario.image.clip_draw(185 - (4 - int(Mario.frame)) * 35, 335, 35, 40, Mario.x - Mario.camera, Mario.y,
                                      Mario.w, Mario.h)
-                draw_rectangle(Mario.x - Mario.w / 2 - Mario.camera, Mario.y - Mario.h / 2,
-                               Mario.x + Mario.w / 2 - Mario.camera, Mario.y + Mario.h / 2)
+
 
 
 class JumpState:
@@ -122,9 +113,9 @@ next_state_table = {
 
 
 class Mario:
-    def __init__(self):
-        self.x = 100
-        self.y = 100
+    def __init__(self, x = 100, y = 100):
+        self.x = x
+        self.y = y
         self.image = load_image("./image/mario.png")
         self.font = load_font('ENCR10B.TTF', 32)
         self.frame = 0
@@ -156,7 +147,7 @@ class Mario:
             self.cur_state.enter(self, event)
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
+        return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
 
     def get_x(self):
         return self.x
@@ -174,6 +165,7 @@ class Mario:
 
     def draw(self):
         self.cur_state.draw(self)
+        draw_rectangle(*self.get_bb())
         self.coinImage.clip_draw(0, 0, 120, 115, 20, get_canvas_height() - 50, 40, 40)
         self.font.draw(45, get_canvas_height() - 50, 'x%d' % self.coin, (255,255,255))
         self.timer.draw()

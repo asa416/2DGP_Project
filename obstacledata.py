@@ -24,3 +24,8 @@ class Stage2Obstacle:
         self.coins = [object.Coin(Pos2.coinPos[i][0], Pos2.coinPos[i][1], 1) for i in range(len(Pos2.coinPos))]
         self.randombox = [object.RandomBox(Pos2.randomBoxPos[i], 200) for i in range(len(Pos2.randomBoxPos))]
         self.plag = object.Plag(Pos2.goalinPos)
+
+
+class BossObstacle:
+    def __init__(self):
+        self.ground = [object.BossBlock(PosBoss.grounds[i][0], PosBoss.grounds[i][1], 'floor') for i in range(len(PosBoss.grounds))]

@@ -12,6 +12,7 @@ FRAMES_PER_ACTION_GOOM = 2
 
 class Turtle:
     image = None
+
     def __init__(self, x, y):
         self.x, self.y = x, y
         if Turtle.image == None:
@@ -21,6 +22,7 @@ class Turtle:
         self.x_max, self.x_min = self.x + 100, self.x - 100
         self.dir = 1
         self.camera = 0
+        self.w, self.h = 50, 50
 
     def update(self):
         self.x += self.velocity * game_framework.frame_time
@@ -33,15 +35,21 @@ class Turtle:
     def set_camera(self, c):
         self.camera = c
 
+    def get_bb(self):
+        return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
+
     def draw(self):
         if self.velocity > 0:
-            self.image.clip_composite_draw(120 + int(self.frame) * 60, 135, 60, 60, 0, 'h', self.x - self.camera, self.y, 50, 50)
-            draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+            self.image.clip_composite_draw(120 + int(self.frame) * 60, 135, 60, 60, 0, 'h', self.x - self.camera, self.y, self.w, self.h)
         else:
-            self.image.clip_draw(120 + int(self.frame) * 60, 135, 60, 60, self.x - self.camera, self.y, 50, 50)
-            draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+            self.image.clip_draw(120 + int(self.frame) * 60, 135, 60, 60, self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(*self.get_bb())
+
+
+
 class Goom:
     image = None
+
     def __init__(self, x, y):
         self.x, self.y = x, y
         if Goom.image == None:
@@ -51,6 +59,7 @@ class Goom:
         self.x_max = self.x + 100
         self.x_min = self.x - 100
         self.camera = 0
+        self.w, self.h = 50, 50
 
     def update(self):
         self.x += self.velocity * game_framework.frame_time
@@ -64,11 +73,12 @@ class Goom:
         self.camera = c
 
     def get_bb(self):
-        return self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25
+        return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
 
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, 50, 50)
-        draw_rectangle(self.x - 25 - self.camera, self.y - 25, self.x + 25 - self.camera, self.y + 25)
+        self.image.clip_draw(int(self.frame) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(*self.get_bb())
+
 
 class Boss:
     def __init__(self):
