@@ -3,9 +3,7 @@ from stagepos import *
 
 class Stage1Enemy:
     def __init__(self):
-        self.gooms = [enemy.Goom(Pos1.goomPos[i], 100) for i in range(len(Pos1.goomPos))]
-        self.turtles = [enemy.Turtle(Pos1.turtlePos[i], 100) for i in range(len(Pos1.turtlePos))]
-
+        self.monster = [enemy.Goom(Pos1.goomPos[i], 100) for i in range(len(Pos1.goomPos))] + [enemy.Turtle(Pos1.turtlePos[i], 100) for i in range(len(Pos1.turtlePos))]
 
 class Stage2Enemy:
     def __init__(self):

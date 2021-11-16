@@ -13,8 +13,10 @@ class Camera:
     def draw(self):
         pass
 
-    def update(self):
-        pass
-
+    def update(self, target):
+        if target > self.x + 400:
+            self.x = target - 400
+        elif target < self.x + 400 and self.x > 0:
+            self.x = target - 400
     def get_camera(self):
         return self.x

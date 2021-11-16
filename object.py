@@ -1,5 +1,5 @@
 from pico2d import *
-
+from game_framework import DebugingMode
 
 class Block:
     image = None
@@ -15,12 +15,12 @@ class Block:
         pass
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y - self.h / 2, self.x + self.w / 2, self.y + self.h / 2
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
-
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 class GroundBlock:
     image = None
@@ -44,7 +44,8 @@ class GroundBlock:
     def draw(self):
         self.image.draw(self.x - self.camera, self.y - 50, self.w, self.h)
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class RandomBox:
@@ -60,6 +61,9 @@ class RandomBox:
         self.w, self.h = 50, 50
         # self.item = 1
 
+    def get_bb(self):
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
     def set_camera(self, c):
         self.camera = c
 
@@ -69,7 +73,8 @@ class RandomBox:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class UneasyBlock:
@@ -83,6 +88,9 @@ class UneasyBlock:
         self.frame = 0
         self.camera = 0
 
+    def get_bb(self):
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
     def set_camera(self, c):
         self.camera = c
 
@@ -91,7 +99,8 @@ class UneasyBlock:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class EasyBlock:
@@ -104,6 +113,9 @@ class EasyBlock:
         self.w, self.h = 50, 50
         self.camera = 0
 
+    def get_bb(self):
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
     def set_camera(self, c):
         self.camera = c
 
@@ -112,7 +124,8 @@ class EasyBlock:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class BossBlock:
@@ -176,7 +189,8 @@ class Pipe:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y)
-        draw_rectangle(self.x - self.xsize / 2 - self.camera, self.y - self.ysize / 2, self.x + self.xsize / 2 - self.camera, self.y + self.ysize / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class Coin:
@@ -206,7 +220,8 @@ class Coin:
 
     def draw(self):
         self.image.clip_draw(120 * (self.frame // 10), 0, 120, 115, self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class Ax:
@@ -224,8 +239,8 @@ class Ax:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera,
-                       self.y + self.h / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 class Plag:
     def __init__(self, x):
@@ -233,6 +248,9 @@ class Plag:
         self.w, self.h = 60, 450
         self.x, self.y = x, 297
         self.camera = 0
+
+    def get_bb(self):
+        return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
     def set_camera(self, c):
         self.camera = c
@@ -242,4 +260,5 @@ class Plag:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())

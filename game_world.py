@@ -1,10 +1,10 @@
 
 # layer 0: Background Objects
-# layer 1: Obstacle Objects
-# layer 2: Enemy Objects
-# layer 2: Player Objects
-# layer 3: UI
-objects = [[], [], [], []]
+# layer 1: Ground Objects
+# layer 2: Obstacle Objects
+# layer 3: Enemy Objects
+# layer 4: Player Objects
+objects = [[], [], [], [], []]
 
 
 def add_object(o, layer):
@@ -40,3 +40,7 @@ def all_objects():
         for o in objects[i]:
             yield o
 
+
+def all_objects_layer(layer):
+    for o in objects[layer]:
+        yield o
