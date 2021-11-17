@@ -175,7 +175,7 @@ class Pipe:
             Pipe.image = load_image('./image/pipeline.png')
         self.x = x
         self.y = 145
-        self.xsize, self.ysize = 66, 140
+        self.w, self.h = 66, 140
         self.camera = 0
 
     def set_camera(self, c):
@@ -185,7 +185,7 @@ class Pipe:
         pass
 
     def get_bb(self):
-        return self.x - self.xsize / 2 - self.camera, self.y - self.ysize / 2, self.x + self.xsize / 2 - self.camera, self.y + self.ysize / 2
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y)

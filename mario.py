@@ -170,7 +170,7 @@ class Mario:
         self.timer = timer.TimerObject(5)
         self.life = 1
 
-    def get_coin(self):
+    def plus_coin(self):
         self.coin += 1
 
     def add_event(self, event):
