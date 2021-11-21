@@ -50,7 +50,6 @@ def collide_block(a, b):
 
     return True
 
-
 def collide_monster(a, b):
     global collideDir
     left_a, bottom_a, right_a, top_a = a.get_bb()
@@ -119,88 +118,91 @@ def update():
     global cam
     for game_object in game_world.all_objects():
         game_object.update()
+    if char.y < -200:
+        game_framework.change_state(world)
+        return
     mx = char.get_x()
     cam.update(mx)
     cx = cam.get_camera()
     for game_object in game_world.all_objects():
         game_object.set_camera(cx)
-    for enemy in game_world.all_objects_layer(3):
-        if collide_monster(char, enemy):
-            if collideDir == 'DOWN' or collideDir == 'UP':
-                enemies.monster.remove(enemy)
-                game_world.remove_object(enemy)
-            else:
-                char.hit()
-    for obs in obstacles.obstacleBlock:
-        if collide_block(char, obs):
-            if collideDir == 'UP':
-                char.jumpv *= -1
-            elif collideDir == 'DOWN':
-                char.landing(obs.y + 50)
-                char.jumping = True
-                char.jumpv = 0.0
-            elif collideDir == 'LEFT':
-                char.x = clamp(-1, char.x, obs.x - obs.w)
-            else:
-                char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
-    for obs in obstacles.block3s:
-        if collide_block(char, obs):
-            if collideDir == 'UP':
-                char.jumpv *= -1
-            elif collideDir == 'DOWN':
-                char.landing(obs.y + 50)
-                char.jumping = True
-                char.jumpv = 0.0
-            elif collideDir == 'LEFT':
-                char.x = clamp(-1, char.x, obs.x - obs.w)
-            else:
-                char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
-    for obs in obstacles.block2s:
-        if collide_block(char, obs):
-            if collideDir == 'UP':
-                char.jumpv *= -1
-            elif collideDir == 'DOWN':
-                char.landing(obs.y + 50)
-                char.jumping = True
-                char.jumpv = 0.0
-            elif collideDir == 'LEFT':
-                char.x = clamp(-1, char.x, obs.x - obs.w)
-            else:
-                char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
-    for obs in obstacles.randombox:
-        if collide_block(char, obs):
-            if collideDir == 'UP':
-                char.jumpv *= -1
-            elif collideDir == 'DOWN':
-                char.landing(obs.y + 50)
-                char.jumping = True
-                char.jumpv = 0.0
-            elif collideDir == 'LEFT':
-                char.x = clamp(-1, char.x, obs.x - obs.w)
-            else:
-                char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
-    for pipe in obstacles.pipes:
-        if collide_block(char, pipe):
-            if collideDir == 'DOWN':
-                char.landing(obs.y + 40)
-                char.jumping = True
-                char.jumpv = 0.0
-            elif collideDir == 'LEFT':
-                char.x = clamp(-1, char.x, pipe.x - pipe.w)
-            else:
-                char.x = clamp(pipe.x + pipe.w, char.x, get_canvas_width())
-    for coin in obstacles.coins:
-        if collide(char, coin):
-            char.plus_coin()
-            obstacles.coins.remove(coin)
-            game_world.remove_object(coin)
-    for gb in game_world.all_objects_layer(1):
-        if collide_block(char, gb):
-            char.landing(100)
+    if char.life != 0:
+        for enemy in game_world.all_objects_layer(3):
+            if collide_monster(char, enemy):
+                if collideDir == 'DOWN' or collideDir == 'UP':
+                    enemies.monster.remove(enemy)
+                    game_world.remove_object(enemy)
+                else:
+                    char.hit()
+        for obs in obstacles.obstacleBlock:
+            if collide_block(char, obs):
+                if collideDir == 'UP':
+                    char.jumpv *= -1
+                elif collideDir == 'DOWN':
+                    char.landing(obs.y + 50)
+                    char.jumping = True
+                    char.jumpv = 0.0
+                elif collideDir == 'LEFT':
+                    char.x = clamp(-1, char.x, obs.x - obs.w)
+                else:
+                    char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
+        for obs in obstacles.block3s:
+            if collide_block(char, obs):
+                if collideDir == 'UP':
+                    char.jumpv *= -1
+                elif collideDir == 'DOWN':
+                    char.landing(obs.y + 50)
+                    char.jumping = True
+                    char.jumpv = 0.0
+                elif collideDir == 'LEFT':
+                    char.x = clamp(-1, char.x, obs.x - obs.w)
+                else:
+                    char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
+        for obs in obstacles.block2s:
+            if collide_block(char, obs):
+                if collideDir == 'UP':
+                    char.jumpv *= -1
+                elif collideDir == 'DOWN':
+                    char.landing(obs.y + 50)
+                    char.jumping = True
+                    char.jumpv = 0.0
+                elif collideDir == 'LEFT':
+                    char.x = clamp(-1, char.x, obs.x - obs.w)
+                else:
+                    char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
+        for obs in obstacles.randombox:
+            if collide_block(char, obs):
+                if collideDir == 'UP':
+                    char.jumpv *= -1
+                elif collideDir == 'DOWN':
+                    char.landing(obs.y + 50)
+                    char.jumping = True
+                    char.jumpv = 0.0
+                elif collideDir == 'LEFT':
+                    char.x = clamp(-1, char.x, obs.x - obs.w)
+                else:
+                    char.x = clamp(obs.x + obs.w, char.x, get_canvas_width())
+        for pipe in obstacles.pipes:
+            if collide_block(char, pipe):
+                if collideDir == 'DOWN':
+                    char.landing(obs.y + 40)
+                    char.jumping = True
+                    char.jumpv = 0.0
+                elif collideDir == 'LEFT':
+                    char.x = clamp(-1, char.x, pipe.x - pipe.w)
+                else:
+                    char.x = clamp(pipe.x + pipe.w, char.x, get_canvas_width())
+        for coin in obstacles.coins:
+            if collide(char, coin):
+                char.plus_coin()
+                obstacles.coins.remove(coin)
+                game_world.remove_object(coin)
+        for gb in game_world.all_objects_layer(1):
+            if collide_block(char, gb):
+                char.landing(100)
     # delay(0.01)
 
 def draw():
-    global font
     clear_canvas()
     for game_object in game_world.all_objects():
         game_object.draw()

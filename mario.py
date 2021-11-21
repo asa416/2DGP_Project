@@ -3,6 +3,7 @@ import game_framework
 # import game_world
 import time
 import timer
+import world
 
 g = -10.0
 ACCEL = 0.2
@@ -90,6 +91,8 @@ class RunState:
             Mario.jumping = True
             Mario.jumpTime += game_framework.frame_time
             Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
+        elif event == GAME_OVER:
+            Mario.jumpv = 20
 
     def do(Mario):
         Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
@@ -130,7 +133,8 @@ class EndState:
         pass
 
     def do(Mario):
-        pass
+        Mario.jumpTime += game_framework.frame_time
+        Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
 
     def draw(Mario):
         Mario.image.clip_draw(50, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
@@ -189,6 +193,9 @@ class Mario:
             self.cur_state.exit(self, event)
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
+        if self.y < -200:
+            self.event_que.clear()
+
 
     def get_bb(self):
         if self.dir > 0:
@@ -232,7 +239,7 @@ class Mario:
 
     def draw(self):
         self.cur_state.draw(self)
-        debug_print('Velocity: ' + str(self.velocity) + ' jumping: ' + str(self.jumping))
+        # debug_print('Velocity: ' + str(self.velocity) + ' jumping: ' + str(self.jumping))
         # print(self.y)
         draw_rectangle(*self.get_bb())
         self.coinImage.clip_draw(0, 0, 120, 115, 20, get_canvas_height() - 50, 40, 40)
