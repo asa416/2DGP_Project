@@ -3,6 +3,7 @@ import object
 import backlayer
 import enemy
 from stagepos import *
+import server
 
 class Stage1BG:
     def __init__(self):
@@ -13,11 +14,12 @@ class Stage1BG:
         self.goalin = backlayer.GoalIn()
         self.camera = 0
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
+
 
     def draw(self):
         self.background.draw(400, 300, 800, 600)
@@ -38,11 +40,11 @@ class Stage2BG:
         self.goalin = backlayer.GoalIn()
         self.camera = 0
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
 
     def draw(self):
         self.background.draw(400, 300, 800, 600)

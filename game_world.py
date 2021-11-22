@@ -39,8 +39,3 @@ def all_objects():
     for i in range(len(objects)):
         for o in objects[i]:
             yield o
-
-
-def all_objects_layer(layer):
-    for o in objects[layer]:
-        yield o

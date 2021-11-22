@@ -1,6 +1,9 @@
 from pico2d import *
 from game_framework import DebugingMode
 
+import server
+import collision
+
 class Block:
     image = None
     x, y = 100, 100
@@ -32,11 +35,11 @@ class GroundBlock:
         if GroundBlock.image == None:
             GroundBlock.image = load_image('./image/block.png')
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
 
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
@@ -64,10 +67,11 @@ class RandomBox:
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
+        self.set_camera()
         if self.num != 0:
             pass
 
@@ -91,11 +95,11 @@ class UneasyBlock:
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
@@ -116,11 +120,11 @@ class EasyBlock:
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
@@ -178,11 +182,11 @@ class Pipe:
         self.w, self.h = 66, 140
         self.camera = 0
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
 
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
@@ -209,10 +213,11 @@ class Coin:
         else:
             self.w, self.h = 50, 50
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
+        self.set_camera()
         self.frame = (self.frame + 1) % 60
 
     def get_bb(self):
@@ -231,8 +236,11 @@ class Ax:
         self.w, self.h = 50, 50
         self.camera = 0
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
+
+    def update(self):
+        self.set_camera()
 
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
@@ -252,11 +260,11 @@ class Plag:
     def get_bb(self):
         return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)

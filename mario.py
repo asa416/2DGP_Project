@@ -3,7 +3,8 @@ import game_framework
 # import game_world
 import time
 import timer
-import world
+import server
+import collision
 
 g = -10.0
 ACCEL = 0.2
@@ -151,7 +152,7 @@ next_state_table = {
 
 
 class Mario:
-    def __init__(self, x = 100, y = 400):
+    def __init__(self, x = 100, y = 100):
         self.x = x
         self.y = y
         self.image = load_image("./image/mario.png")
@@ -196,6 +197,8 @@ class Mario:
         if self.y < -200:
             self.event_que.clear()
 
+        server.cam.set_camera(self.x)
+
 
     def get_bb(self):
         if self.dir > 0:
@@ -214,8 +217,8 @@ class Mario:
     def get_speed(self):
         return self.velocity
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def is_jumping(self):
         return self.jumping

@@ -1,5 +1,7 @@
 from pico2d import *
 import game_framework
+import server
+import collision
 
 PIXEL_PER_METER = (10.0 / 0.1)
 ENEMY_SPEED_KMPS = 5.0
@@ -26,6 +28,7 @@ class Turtle:
         self.w, self.h = 50, 50
 
     def update(self):
+        self.set_camera()
         self.x += self.velocity * game_framework.frame_time
         self.frame = (self.frame + FRAMES_PER_ACTION_TURTLE * ACTION_PER_TIME * game_framework.frame_time) % 2
         if self.x > self.x_max:
@@ -33,8 +36,8 @@ class Turtle:
         elif self.x < self.x_min:
             self.velocity *= -1
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def get_bb(self):
         return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
@@ -63,6 +66,7 @@ class Goom:
         self.w, self.h = 50, 50
 
     def update(self):
+        self.set_camera()
         self.x += self.velocity * game_framework.frame_time
         self.frame = (self.frame + FRAMES_PER_ACTION_GOOM * ACTION_PER_TIME * game_framework.frame_time) % 2
         if self.x > self.x_max:
@@ -70,8 +74,8 @@ class Goom:
         elif self.x < self.x_min:
             self.velocity *= -1
 
-    def set_camera(self, c):
-        self.camera = c
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def get_bb(self):
         return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
