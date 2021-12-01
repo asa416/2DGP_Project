@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 import server
 import collision
+from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
 
 PIXEL_PER_METER = (10.0 / 0.1)
 ENEMY_SPEED_KMPS = 5.0
@@ -21,20 +22,39 @@ class Turtle:
         if Turtle.image == None:
             Turtle.image = load_image('./image/turtle.png')
         self.frame = 0
-        self.velocity = ENEMY_SPEED_PPS
+        self.speed = 0
         self.x_max, self.x_min = self.x + 100, self.x - 100
         self.dir = 1
+        self.timer = 1.5
         self.camera = 0
         self.w, self.h = 50, 50
+        self.build_behavior_tree()
 
     def update(self):
         self.set_camera()
-        self.x += self.velocity * game_framework.frame_time
+        self.bt.run()
+        # self.x += self.velocity * game_framework.frame_time
         self.frame = (self.frame + FRAMES_PER_ACTION_TURTLE * ACTION_PER_TIME * game_framework.frame_time) % 2
-        if self.x > self.x_max:
-            self.velocity *= -1
-        elif self.x < self.x_min:
-            self.velocity *= -1
+        self.x += self.speed * game_framework.frame_time * self.dir
+        # if self.x > self.x_max:
+        #     self.velocity *= -1
+        # elif self.x < self.x_min:
+        #     self.velocity *= -1
+
+    def wander(self):
+        self.speed = ENEMY_SPEED_PPS
+        self.timer -= game_framework.frame_time
+        if self.timer <= 0:
+            self.timer = 1.0
+            self.dir *= -1
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def build_behavior_tree(self):
+        wnader_node = LeafNode("wander", self.wander)
+
+        self.bt = BehaviorTree(wnader_node)
 
     def set_camera(self):
         self.camera = server.cam.get_camera()
@@ -43,7 +63,7 @@ class Turtle:
         return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
 
     def draw(self):
-        if self.velocity > 0:
+        if self.dir > 0:
             self.image.clip_composite_draw(120 + int(self.frame) * 60, 135, 60, 60, 0, 'h', self.x - self.camera, self.y, self.w, self.h)
         else:
             self.image.clip_draw(120 + int(self.frame) * 60, 135, 60, 60, self.x - self.camera, self.y, self.w, self.h)
@@ -59,20 +79,34 @@ class Goom:
         if Goom.image == None:
             Goom.image = load_image('./image/goom.png')
         self.frame = 0
-        self.velocity = ENEMY_SPEED_PPS
+        self.speed = 0
         self.x_max = self.x + 100
         self.x_min = self.x - 100
         self.camera = 0
+        self.timer = 1.5
+        self.dir = 1
         self.w, self.h = 50, 50
+        self.build_behavior_tree()
 
     def update(self):
         self.set_camera()
-        self.x += self.velocity * game_framework.frame_time
+        self.bt.run()
+        self.x += self.speed * game_framework.frame_time * self.dir
         self.frame = (self.frame + FRAMES_PER_ACTION_GOOM * ACTION_PER_TIME * game_framework.frame_time) % 2
-        if self.x > self.x_max:
-            self.velocity *= -1
-        elif self.x < self.x_min:
-            self.velocity *= -1
+
+    def wander(self):
+        self.speed = ENEMY_SPEED_PPS
+        self.timer -= game_framework.frame_time
+        if self.timer <= 0:
+            self.timer = 1.0
+            self.dir *= -1
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def build_behavior_tree(self):
+        wander_node = LeafNode("wander", self.wander)
+        self.bt = BehaviorTree(wander_node)
 
     def set_camera(self):
         self.camera = server.cam.get_camera()
