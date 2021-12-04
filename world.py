@@ -46,7 +46,7 @@ def handle_events():
             elif event.key == SDLK_RIGHT:
                 if stage_index < 3:
                     stage_index += 1
-            elif event.key == SDLK_SPACE:
+            elif event.key == SDLK_s:
                 if stage_index == 1:
                     game_framework.change_state(stage1)
                 elif stage_index == 2:

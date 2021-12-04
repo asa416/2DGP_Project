@@ -25,7 +25,7 @@ class Turtle:
         self.speed = 0
         self.x_max, self.x_min = self.x + 100, self.x - 100
         self.dir = 1
-        self.timer = 1.5
+        self.timer = 1.0
         self.camera = 0
         self.w, self.h = 50, 50
         self.build_behavior_tree()
@@ -83,7 +83,7 @@ class Goom:
         self.x_max = self.x + 100
         self.x_min = self.x - 100
         self.camera = 0
-        self.timer = 1.5
+        self.timer = 1.0
         self.dir = 1
         self.w, self.h = 50, 50
         self.build_behavior_tree()

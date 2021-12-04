@@ -58,11 +58,17 @@ class RandomBox:
         if RandomBox.image == None:
             RandomBox.image = load_image('./image/randombox.png')
         self.x, self.y = x, y
-        state = True
+        self.state = True
         self.num = 1
         self.camera = 0
         self.w, self.h = 50, 50
         # self.item = 1
+
+    def get_item(self):
+        print('random item')
+        self.num -= 1
+        if self.num <= 0:
+            self.state = False
 
     def get_bb(self):
         return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
