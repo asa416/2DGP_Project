@@ -53,6 +53,7 @@ class IdleState:
 
     def exit(Mario, event):
         if event == SPACE_DOWN:
+            Mario.jump_sound.play()
             Mario.jumpv = 23
             Mario.jumping = True
             Mario.jumpTime += game_framework.frame_time
@@ -83,6 +84,7 @@ class RunState:
 
     def exit(Mario, event):
         if event == SPACE_DOWN:
+            Mario.jump_sound.play()
             Mario.jumpv = 23
             Mario.jumpTime += game_framework.frame_time
             Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
@@ -301,6 +303,9 @@ class JumpState:
 class EndState:
     def enter(Mario, event):
         Mario.timer.stop()
+        if event == GAME_OVER:
+            Mario.bgm.stop()
+            Mario.gameover_sound.play()
         if event == CLEAR:
             pass
 
@@ -326,7 +331,7 @@ class EndState:
             Mario.image.clip_draw(50, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
         else:
             if Mario.y > 150:
-                Mario.image.clip_draw(50,339 + 340, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
+                Mario.image.clip_draw(50, 339 + 340, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
             else:
                 if int(Mario.frame) < 3:
                     Mario.image.clip_draw(130 + int(Mario.frame) * 35, 339 + 380, 35, 40, Mario.x - Mario.camera,
@@ -367,8 +372,18 @@ class Mario:
         self.cur_state.enter(self, None)
         self.coin = 0
         self.coinImage = load_image('./image/coin.png')
-        self.timer = timer.TimerObject(5)
+        self.timer = timer.TimerObject(3)
         self.life = 1
+
+        self.jump_sound = load_wav('./music/jump.wav')
+        self.jump_sound.set_volume(16)
+
+        self.gameover_sound = load_wav('./music/gameover.wav')
+        self.gameover_sound.set_volume(32)
+
+        self.bgm = load_music('./music/mariobgm.mp3')
+        self.bgm.set_volume(32)
+        self.bgm.repeat_play()
 
     def plus_coin(self):
         self.coin += 1

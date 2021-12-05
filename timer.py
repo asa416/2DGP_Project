@@ -13,7 +13,7 @@ class TimerObject:
         if self.on:
             self.leftTime = self.limitTime - (get_time() - self.startTime)
             self.m = int(self.leftTime)
-            self.sec = (self.leftTime - self.m) * 100
+            # self.sec = (self.leftTime - self.m) * 100
 
     def stop(self):
         self.on = False
@@ -21,4 +21,4 @@ class TimerObject:
     def draw(self):
 
         self.font.draw(get_canvas_width() - 110, get_canvas_height() - 20, 'TIME', (255, 255, 255))
-        self.font.draw(get_canvas_width() - 130, get_canvas_height() - 50, '%d:%d' % (self.m, self.sec), (255, 255, 255))
+        self.font.draw(get_canvas_width() - 100, get_canvas_height() - 50, '%d' % self.m, (255, 255, 255))

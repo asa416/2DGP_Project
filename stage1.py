@@ -14,6 +14,7 @@ import server
 name = "Stage1"
 
 def enter():
+    global music_bgm
     server.stagefont = load_font('ENCR10B.TTF', 24)
     server.char = Mario()
     server.BG = bgdata.Stage1BG()
@@ -32,6 +33,7 @@ def enter():
     game_world.add_object(server.obstacles.plag, 2)
     game_world.add_object(server.BG, 0)
     game_world.add_object(server.cam, 0)
+
 
 
 def exit():
