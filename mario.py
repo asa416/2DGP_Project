@@ -29,7 +29,7 @@ TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 4
 
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SPACE_DOWN, GAME_OVER, LANDING, RUNNING, DROP = range(9)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SPACE_DOWN, GAME_OVER, LANDING, RUNNING, DROP, CLEAR = range(10)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -94,6 +94,22 @@ class RunState:
         Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
         Mario.x += Mario.velocity * game_framework.frame_time
 
+        for coin in server.obstacles.coins.copy():
+            if collision.collide(Mario, coin):
+                Mario.plus_coin()
+                server.obstacles.coins.remove(coin)
+                game_world.remove_object(coin)
+
+        for obs in server.obstacles.obstacleBlock:
+            if collision.collide(Mario, obs):
+                if Mario.y > obs.y:
+                    break
+                if Mario.dir > 0:
+                    Mario.x = clamp(0, Mario.x, obs.x - 50)
+                else:
+                    Mario.x = clamp(obs.x + 50, Mario.x, 1000)
+                break
+
         for pipe in server.obstacles.pipes:
             if collision.collide(Mario, pipe):
                 if Mario.y > pipe.y:
@@ -106,7 +122,8 @@ class RunState:
                 break
         for enemy in server.enemies.monster:
             if collision.collide(Mario, enemy):
-                if Mario.life <= 1:
+                Mario.hit()
+                if Mario.life <= 0:
                     Mario.add_event(GAME_OVER)
 
         if Mario.y > 100:
@@ -114,8 +131,20 @@ class RunState:
             for ground in server.obstacles.block2s + server.obstacles.block3s + server.obstacles.randombox + server.obstacles.pipes:
                 if collision.collide(Mario, ground):
                     landing = True
+            for obs in server.obstacles.obstacleBlock:
+                if collision.collide(Mario, obs):
+                    if Mario.y > obs.y:
+                        landing = True
+                        continue
+                    else:
+                        landing = True
+                        if Mario.dir > 0:
+                            Mario.x = clamp(0, Mario.x, obs.x - 50)
+                        else:
+                            Mario.x = clamp(obs.x + 50, Mario.x, 1000)
             if not landing:
                 Mario.add_event(DROP)
+
 
     def draw(Mario):
         if Mario.dir > 0:
@@ -156,6 +185,29 @@ class JumpState:
         Mario.jumpTime += game_framework.frame_time
         Mario.x += Mario.velocity * game_framework.frame_time
         Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
+
+        for coin in server.obstacles.coins.copy():
+            if collision.collide(Mario, coin):
+                Mario.plus_coin()
+                server.obstacles.coins.remove(coin)
+                game_world.remove_object(coin)
+
+        for obs in server.obstacles.obstacleBlock:
+            if collision.collide(Mario, obs):
+                if Mario.y > obs.y:
+                    Mario.y = obs.y + 50
+                    Mario.jumpTime = 0.0
+                    if Mario.velocity ** 2 > 0:
+                        Mario.add_event(RUNNING)
+                    else:
+                        Mario.add_event(LANDING)
+                    break
+                else:
+                    if Mario.dir > 0:
+                        Mario.x = clamp(-1, Mario.x, obs.x - 50)
+                    else:
+                        Mario.x = clamp(obs.x + 50, Mario.x, 1000)
+
         for ground3 in server.obstacles.block3s:
             if collision.collide(Mario, ground3):
                 if Mario.y > ground3.y:
@@ -235,6 +287,10 @@ class JumpState:
                 else:
                     Mario.add_event(GAME_OVER)
 
+        if collision.collide(Mario, server.obstacles.plag):
+            Mario.add_event(CLEAR)
+
+
 
     def draw(Mario):
         if Mario.dir > 0:
@@ -245,18 +301,39 @@ class JumpState:
 class EndState:
     def enter(Mario, event):
         Mario.timer.stop()
-        pass
+        if event == CLEAR:
+            pass
 
     def exit(Mario, event):
         pass
 
     def do(Mario):
-        Mario.jumpTime += game_framework.frame_time
-        Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
+        Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+        if Mario.life <= 0:
+            Mario.jumpTime += game_framework.frame_time
+            Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
+        else:
+            Mario.y -= RUN_SPEED_PPS * game_framework.frame_time
+            if Mario.y <= 150:
+                Mario.y = 100
+                Mario.x += RUN_SPEED_PPS * game_framework.frame_time
+                if Mario.x >= 6800:
+                    # game_framework.change_state()
+                    Mario.x = 6800
 
     def draw(Mario):
-        Mario.image.clip_draw(50, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
-
+        if Mario.life <= 0:
+            Mario.image.clip_draw(50, 339 + 380, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
+        else:
+            if Mario.y > 150:
+                Mario.image.clip_draw(50,339 + 340, 40, 40, Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
+            else:
+                if int(Mario.frame) < 3:
+                    Mario.image.clip_draw(130 + int(Mario.frame) * 35, 339 + 380, 35, 40, Mario.x - Mario.camera,
+                                          Mario.y, Mario.w, Mario.h)
+                else:
+                    Mario.image.clip_draw(130 + (4 - int(Mario.frame)) * 35, 339 + 380, 35, 40, Mario.x - Mario.camera,
+                                          Mario.y, Mario.w, Mario.h)
 
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
@@ -266,7 +343,7 @@ next_state_table = {
     EndState: {RIGHT_UP: EndState, LEFT_UP: EndState, LEFT_DOWN: EndState, RIGHT_DOWN: EndState,
                GAME_OVER: EndState, SPACE_DOWN: EndState},
     JumpState: {RIGHT_UP: JumpState, LEFT_UP: JumpState, LEFT_DOWN: JumpState, RIGHT_DOWN: JumpState,
-               GAME_OVER: EndState, SPACE_DOWN: JumpState, LANDING: IdleState, RUNNING: RunState, DROP: JumpState},
+               GAME_OVER: EndState, SPACE_DOWN: JumpState, LANDING: IdleState, RUNNING: RunState, DROP: JumpState, CLEAR: EndState},
 }
 
 
@@ -301,8 +378,6 @@ class Mario:
 
     def hit(self):
         self.life -= 1
-        if self.life == 0:
-            self.add_event(GAME_OVER)
 
     def update(self):
         self.set_camera()

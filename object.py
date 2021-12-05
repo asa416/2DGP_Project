@@ -25,6 +25,7 @@ class Block:
         if DebugingMode == 1:
             draw_rectangle(*self.get_bb())
 
+
 class GroundBlock:
     image = None
 
@@ -109,6 +110,32 @@ class UneasyBlock:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
+
+
+class Obstacle:
+    image = None
+
+    def __init__(self, x, y):
+        if Obstacle.image is None:
+            Obstacle.image = load_image('./image/block2.png')
+        self.x, self.y = x, y
+        self.w, self.h = 50, 50
+        self.camera = 0
+
+    def get_bb(self):
+        return self.x - self.w / 2 - self.camera, 0, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
+
+    def update(self):
+        self.set_camera()
+
+    def draw(self):
+        for i in range(0, self.y + 1, 50):
+            self.image.draw(self.x - self.camera, i, self.w, self.h)
         if DebugingMode == 1:
             draw_rectangle(*self.get_bb())
 
