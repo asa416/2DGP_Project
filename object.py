@@ -1,5 +1,6 @@
 from pico2d import *
 from game_framework import DebugingMode
+import item
 
 import server
 import collision
@@ -63,9 +64,13 @@ class RandomBox:
         self.num = 1
         self.camera = 0
         self.w, self.h = 50, 50
+        self.it = item.Mushroom(self.x, self.y + 50)
         # self.item = 1
 
     def get_item(self):
+        if not self.state:
+            return
+        self.it.show_mush()
         print('random item')
         self.num -= 1
         if self.num <= 0:
@@ -79,11 +84,13 @@ class RandomBox:
 
     def update(self):
         self.set_camera()
+        self.it.update()
         if self.num != 0:
             pass
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        self.it.draw()
         if DebugingMode == 1:
             draw_rectangle(*self.get_bb())
 
@@ -176,11 +183,15 @@ class BossBlock:
         self.camera = 0
         self.state = state
 
-    def set_camera(self, c):
-        self.camera = c
+    def get_bb(self):
+        if self.state == 'floor':
+            return self.x - self.w / 2 - self.camera, 0, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        pass
+        self.set_camera()
 
     def draw(self):
         if self.state == 'floor':
@@ -189,6 +200,8 @@ class BossBlock:
         else:
             for i in range(self.y, get_canvas_height() + 1, 50):
                 self.image.draw(self.x - self.camera, i, self.w, self.h)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class BossGround:
@@ -197,11 +210,19 @@ class BossGround:
         self.x, self.y = x, y
         self.camera = 0
 
-    def set_camera(self, c):
-        self.camera = c
+    def get_bb(self):
+        return self.x - self.w / 2 - self.camera, 0, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+
+    def update(self):
+        self.set_camera()
+
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
 
 
 class Pipe:

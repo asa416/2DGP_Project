@@ -9,3 +9,6 @@ class Stage2Enemy:
     def __init__(self):
         self.monster = [enemy.Goom(Pos2.goomPos[i], 100) for i in range(len(Pos2.goomPos))] + [enemy.Turtle(Pos2.turtlePos[i], 100) for i in range(len(Pos2.turtlePos))]
 
+class BossStageEnemy:
+    def __init__(self):
+        self.monster = [enemy.Boss(5000, 300)]

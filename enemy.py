@@ -12,6 +12,7 @@ TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION_TURTLE = 2
 FRAMES_PER_ACTION_GOOM = 2
+FRAMES_PER_ACTION_BOSS = 4
 
 
 class Turtle:
@@ -70,7 +71,6 @@ class Turtle:
         draw_rectangle(*self.get_bb())
 
 
-
 class Goom:
     image = None
 
@@ -120,32 +120,44 @@ class Goom:
 
 
 class Boss:
-    def __init__(self):
+    def __init__(self, x, y):
         self.image = load_image('./image/boss.png')
-        self.x = 600
-        self.y = 165
+        self.x, self.y = x , y
         self.w, self.h = 80, 80
-        self.frame = 0
         self.dir = 1
+        self.timer = 1.0
+        self.frame = 0
         self.speed = 1
         self.camera = 0
+        self.build_behavior_tree()
 
-    def set_camera(self, c):
-        self.camera = c
-
-    def findCharacter(self):
-        if self.x - self.camera < 400:
-            self.dir = 1
+    def wander(self):
+        self.speed = ENEMY_SPEED_PPS
+        self.timer -= game_framework.frame_time
+        if self.timer <= 0:
+            self.timer = 1.0
+            self.dir *= -1
+            return BehaviorTree.SUCCESS
         else:
-            self.dir = -1
+            return BehaviorTree.RUNNING
+
+    def build_behavior_tree(self):
+        wander_node = LeafNode("wander", self.wander)
+        self.bt = BehaviorTree(wander_node)
+
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
 
     def update(self):
-        self.findCharacter()
-        # self.x += self.dir * self.speed
-        self.frame = (self.frame + 1) % 40
+        self.set_camera()
+        self.bt.run()
+        self.x += self.speed * game_framework.frame_time * self.dir
+        self.frame = (self.frame + FRAMES_PER_ACTION_BOSS * ACTION_PER_TIME * game_framework.frame_time) % 2
+
+
+    def get_bb(self):
+        return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
 
     def draw(self):
-        if self.dir == 1:
-            self.image.clip_draw(80 * (self.frame // 10), 40, 80, 70, self.x - self.camera, self.y, self.w, self.h)
-        else:
-            self.image.clip_draw(80 * (self.frame // 10), 150, 80, 70, self.x - self.camera, self.y, self.w, self.h)
+        self.image.clip_draw(80 * int(self.frame), 150, 80, 70, self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(*self.get_bb())

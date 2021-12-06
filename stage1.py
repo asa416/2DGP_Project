@@ -14,7 +14,6 @@ import server
 name = "Stage1"
 
 def enter():
-    global music_bgm
     server.stagefont = load_font('ENCR10B.TTF', 24)
     server.char = Mario()
     server.BG = bgdata.Stage1BG()
@@ -46,6 +45,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            server.char.stop_bgm()
             game_framework.change_state(world)
         else:
             server.char.handleEvent(event)
