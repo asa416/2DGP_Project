@@ -7,6 +7,7 @@ import enemydata
 import obstacledata
 from camera import Camera
 
+
 from pico2d import *
 import server
 
@@ -45,7 +46,6 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            server.char.stop_bgm()
             game_framework.change_state(world)
         else:
             server.char.handleEvent(event)
@@ -55,7 +55,6 @@ def update():
     for game_object in game_world.all_objects():
         game_object.update()
 
-    # delay(0.01)
 
 def draw():
     clear_canvas()

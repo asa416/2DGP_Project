@@ -52,9 +52,10 @@ def handle_events():
                 elif stage_index == 2:
                     game_framework.change_state(stage2)
                 elif stage_index == 3:
-                    game_framework.change_state(stage3)
+                    game_framework.change_state(stage2)
                 else:
                     game_framework.change_state(bossStage)
+
 def update():
     delay(0.01)
 

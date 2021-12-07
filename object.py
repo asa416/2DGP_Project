@@ -205,13 +205,14 @@ class BossBlock:
 
 
 class BossGround:
-    def __init__(self, x, y):
+    def __init__(self, x):
         self.image = load_image('./image/bossground.png')
-        self.x, self.y = x, y
+        self.x, self.y = x, 200
         self.camera = 0
+        self.w, self.h = 150, 100
 
     def get_bb(self):
-        return self.x - self.w / 2 - self.camera, 0, self.x + self.w / 2 - self.camera, self.y + self.h / 2
+        return self.x - self.w / 2 - self.camera, self.y - self.h / 2, self.x + self.w / 2 - self.camera, self.y + self.h / 2
 
     def update(self):
         self.set_camera()
@@ -220,7 +221,7 @@ class BossGround:
         self.camera = server.cam.get_camera()
 
     def draw(self):
-        self.image.draw(self.x - self.camera, self.y)
+        self.image.draw(self.x - self.camera, self.y, self.w, self.h)
         if DebugingMode == 1:
             draw_rectangle(*self.get_bb())
 
@@ -304,6 +305,7 @@ class Ax:
         if DebugingMode == 1:
             draw_rectangle(*self.get_bb())
 
+
 class Plag:
     def __init__(self, x):
         self.image = load_image('./image/goal.png')
@@ -322,5 +324,29 @@ class Plag:
 
     def draw(self):
         self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        if DebugingMode == 1:
+            draw_rectangle(*self.get_bb())
+
+
+class Fire:
+    image = None
+    def __init__(self, x):
+        if Fire.image == None:
+            Fire.image = load_image('./image/fire.png')
+        self.x = x
+        self.y = 50
+        self.camera = 0
+
+    def get_bb(self):
+        return self.x - self.camera - 75, self.y - 50, self.x + 75 - self.camera, self.y + 50
+
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
+
+    def update(self):
+        self.set_camera()
+
+    def draw(self):
+        self.image.draw(self.x - self.camera, self.y, 150, 100)
         if DebugingMode == 1:
             draw_rectangle(*self.get_bb())

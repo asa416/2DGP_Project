@@ -1,5 +1,6 @@
 from pico2d import *
 
+
 class Tree:
     image = None
     def __init__(self):
@@ -10,12 +11,14 @@ class Tree:
     def draw(self, x):
         self.image.draw(x, self.y)
 
+
 class GoalIn:
     def __init__(self):
         self.image = load_image('./image/goalin.png')
 
     def draw(self, x):
         self.image.draw(x, 210, 400, 300)
+
 
 class Grass:
     image = None
@@ -27,15 +30,6 @@ class Grass:
     def draw(self, x):
         self.image.draw(x, self.y)
 
-class Fire:
-    image = None
-    def __init__(self):
-        if Fire.image == None:
-            Fire.image = load_image('./image/fire.png')
-        self.y = 40
-
-    def draw(self, x):
-        self.image.draw(x, self.y)
 
 class Cloud:
     image = None

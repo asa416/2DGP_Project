@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 # import game_world
 import time
+import over
 
 import game_world
 import object
@@ -20,7 +21,7 @@ GRAVITY_PPSS = GRAVITY_MPSS * PIXEL_PER_METER
 RUN_SPEED_KMPH = 15.0 # 20.0 test more
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
-RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER) # 약 4.1
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER) + 300 # 약 4.1
 MAX_SPEED = RUN_SPEED_PPS
 
 JUMP_SPEED_MPS = 0.1
@@ -340,6 +341,8 @@ class EndState:
         if Mario.life <= 0:
             Mario.jumpTime += game_framework.frame_time
             Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
+            if Mario.y < 0:
+                game_framework.change_state(over)
         else:
             Mario.y -= RUN_SPEED_PPS * game_framework.frame_time
             if Mario.y <= 150:
@@ -396,7 +399,7 @@ class Mario:
         self.coin = 0
         self.coinImage = load_image('./image/coin.png')
         self.timer = timer.TimerObject(3)
-        self.life = 100
+        self.life = 1
 
         self.jump_sound = load_wav('./music/jump.wav')
         self.jump_sound.set_volume(16)
@@ -433,8 +436,8 @@ class Mario:
             self.cur_state.enter(self, event)
         if self.y < -200:
             self.event_que.clear()
-        if self.y < 100:
-            self.y = 100
+        # if self.y < 100:
+        #     self.y = 100
 
         server.cam.set_camera(self.x)
 

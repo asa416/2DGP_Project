@@ -36,3 +36,6 @@ class BossObstacle:
         self.coins = []
         self.randombox = []
         self.plag = None
+        self.fire = [object.Fire(PosBoss.fires[i]) for i in range(len(PosBoss.fires))]
+        self.ax = object.Ax(*PosBoss.ax)
+        self.bridge = [object.BossGround(PosBoss.bridges[i]) for i in range(len(PosBoss.bridges))]
