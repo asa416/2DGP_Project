@@ -78,6 +78,7 @@ class IdleState:
                         Mario.hit()
                         Mario.hit_timer = 2.0
                         if Mario.life <= 0:
+                            Mario.die = True
                             Mario.add_event(GAME_OVER)
                     break
 
@@ -87,6 +88,7 @@ class IdleState:
                     Mario.hit()
                     Mario.hit_timer = 2.0
                     if Mario.life <= 0:
+                        Mario.die = True
                         Mario.add_event(GAME_OVER)
                 break
 
@@ -155,6 +157,7 @@ class RunState:
                     Mario.hit()
                     Mario.hit_timer = 2.0
                     if Mario.life <= 0:
+                        Mario.die = True
                         Mario.add_event(GAME_OVER)
                 break
 
@@ -174,6 +177,7 @@ class RunState:
                         Mario.hit()
                         Mario.hit_timer = 2.0
                         if Mario.life <= 0:
+                            Mario.die = True
                             Mario.add_event(GAME_OVER)
                     break
 
@@ -342,6 +346,7 @@ class JumpState:
                             Mario.hit()
                             Mario.hit_timer = 2.0
                             if Mario.life <= 0:
+                                Mario.die = True
                                 Mario.add_event(GAME_OVER)
                     else:
                         server.enemies.monster.remove(e)
@@ -351,6 +356,7 @@ class JumpState:
                         Mario.hit()
                         Mario.hit_timer = 2.0
                         if Mario.life <= 0:
+                            Mario.die = True
                             Mario.add_event(GAME_OVER)
                 break
 
@@ -371,6 +377,7 @@ class JumpState:
                 if collision.collide(Mario, fire):
                     Mario.jumpv = 30
                     Mario.life = 0
+                    Mario.die = True
                     Mario.add_event(GAME_OVER)
 
         if len(server.enemies.fireball):
@@ -380,6 +387,7 @@ class JumpState:
                         Mario.hit()
                         Mario.hit_timer = 2.0
                         if Mario.life <= 0:
+                            Mario.die = True
                             Mario.add_event(GAME_OVER)
                     break
 
@@ -437,7 +445,7 @@ class EndState:
                     Mario.x = 6800
 
     def draw(Mario):
-        if Mario.life <= 0:
+        if Mario.die:
             Mario.image[Mario.state].clip_draw(mario_start[Mario.state][3], mario_size[Mario.state][1], mario_size[Mario.state][0], mario_size[Mario.state][1], Mario.x - Mario.camera, Mario.y, Mario.w, Mario.h)
         else:
             if Mario.y > 150:
@@ -506,6 +514,8 @@ class Mario:
 
         self.b_b = False
         self.b_b_timer = 0.0
+
+        self.die = False
 
     def plus_coin(self):
         self.coin += 1
@@ -590,7 +600,7 @@ class Mario:
         self.cur_state.draw(self)
         # debug_print('Velocity: ' + str(self.velocity) + ' jumping: ' + str(self.jumping))
         # print(self.y)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
         self.coinImage.clip_draw(0, 0, 120, 115, 20, get_canvas_height() - 50, 40, 40)
         self.font.draw(45, get_canvas_height() - 50, 'x%d' % self.coin, (255, 255, 255))
         self.life_image.draw(20, get_canvas_height() - 100)

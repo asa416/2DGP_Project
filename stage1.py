@@ -38,6 +38,8 @@ def enter():
 
 
 def exit():
+    if server.char.coin > server.coin_num[0]:
+        server.coin_num[0] = server.char.coin
     game_world.clear()
 
 

@@ -4,20 +4,24 @@ import stage1
 import stage2
 import stage3
 import bossStage
+import server
 
 name = "WolrdMap"
 image = None
 mario = None
+coin_image = None
 stage_list = []
 stage_index = 0
 
 def enter():
     global image
     global mario
+    global coin_image
     global stage_list
     global stage_index
     mario = load_image('./image/mario.png')
     image = load_image('./image/map.png')
+    coin_image = load_image('./image/coin.png')
     stage_index = 0
     stage_list.append((100, 600 - 170))
     stage_list.append((210, 600 - 60))
@@ -62,6 +66,9 @@ def update():
 def draw():
     clear_canvas()
     image.draw(400, 300, 800, 600)
+    for i in range(1, 4):
+        for k in range(server.coin_num[i - 1]):
+            coin_image.clip_draw(0, 0, 120, 115, stage_list[i][0] - 30 + 30 * k, stage_list[i][1] - 50, 30, 30)
     mario.clip_draw(2, 339 + 380, 40, 40, stage_list[stage_index][0], stage_list[stage_index][1], 50, 50)
     update_canvas()
 

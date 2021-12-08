@@ -69,7 +69,7 @@ class Turtle:
             self.image.clip_composite_draw(120 + int(self.frame) * 60, 135, 60, 60, 0, 'h', self.x - self.camera, self.y, self.w, self.h)
         else:
             self.image.clip_draw(120 + int(self.frame) * 60, 135, 60, 60, self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
 
 class Goom:
@@ -117,7 +117,7 @@ class Goom:
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
 
 class Boss:
@@ -211,7 +211,7 @@ class Boss:
 
     def draw(self):
         self.image.clip_draw(80 * int(self.frame), 150, 80, 70, self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
 class FireBall:
     image = None
@@ -242,4 +242,4 @@ class FireBall:
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, self.w, self.h)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
