@@ -4,6 +4,7 @@ import game_framework
 import time
 import over
 
+import enemy
 import game_world
 import object
 import timer
@@ -21,7 +22,7 @@ GRAVITY_PPSS = GRAVITY_MPSS * PIXEL_PER_METER
 RUN_SPEED_KMPH = 15.0 # 20.0 test more
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
-RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER) + 300 # 약 4.1
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER) # 약 4.1
 MAX_SPEED = RUN_SPEED_PPS
 
 JUMP_SPEED_MPS = 0.1
@@ -69,6 +70,26 @@ class IdleState:
 
     def do(Mario):
         Mario.frame = (Mario.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+
+        if len(server.enemies.fireball):
+            for fire in server.enemies.fireball:
+                if collision.collide(Mario, fire):
+                    if Mario.hit_timer == 0:
+                        Mario.hit()
+                        Mario.hit_timer = 2.0
+                        if Mario.life <= 0:
+                            Mario.add_event(GAME_OVER)
+                    break
+
+        for enemy in server.enemies.monster:
+            if collision.collide(Mario, enemy):
+                if Mario.hit_timer == 0:
+                    Mario.hit()
+                    Mario.hit_timer = 2.0
+                    if Mario.life <= 0:
+                        Mario.add_event(GAME_OVER)
+                break
+
 
     def draw(Mario):
         if Mario.dir > 0:
@@ -123,7 +144,6 @@ class RunState:
             if collision.collide(Mario, pipe):
                 if Mario.y > pipe.y:
                     break
-                print('pipe')
                 if Mario.dir > 0:
                     Mario.x = clamp(0, Mario.x, pipe.x - 53)
                 else:
@@ -131,9 +151,12 @@ class RunState:
                 break
         for enemy in server.enemies.monster:
             if collision.collide(Mario, enemy):
-                Mario.hit()
-                if Mario.life <= 0:
-                    Mario.add_event(GAME_OVER)
+                if Mario.hit_timer == 0:
+                    Mario.hit()
+                    Mario.hit_timer = 2.0
+                    if Mario.life <= 0:
+                        Mario.add_event(GAME_OVER)
+                break
 
         for ground in server.obstacles.ground:
             if collision.collide(Mario, ground):
@@ -144,8 +167,28 @@ class RunState:
                         Mario.x = clamp(ground.x + 50, Mario.x, 1000)
                     break
 
+        if len(server.enemies.fireball):
+            for fire in server.enemies.fireball:
+                if collision.collide(Mario, fire):
+                    if Mario.hit_timer == 0:
+                        Mario.hit()
+                        Mario.hit_timer = 2.0
+                        if Mario.life <= 0:
+                            Mario.add_event(GAME_OVER)
+                    break
+
         if Mario.y > 100:
             landing = False
+            if server.obstacles.bridge is not None:
+                for bridge in server.obstacles.bridge:
+                    if collision.collide(Mario, bridge):
+                        if Mario.y < bridge.y:
+                            if Mario.dir > 0:
+                                Mario.x = clamp(0, Mario.x, bridge.x)
+                        else:
+                            landing = True
+                        break
+
             for ground in server.obstacles.ground + server.obstacles.block2s + server.obstacles.block3s + server.obstacles.randombox + server.obstacles.pipes:
                 if collision.collide(Mario, ground):
                     landing = True
@@ -197,6 +240,8 @@ class JumpState:
 
     def exit(Mario, event):
         Mario.dir = Mario.velocity
+        if event == GAME_OVER:
+            Mario.jumpv = 30
         pass
 
     def do(Mario):
@@ -226,20 +271,6 @@ class JumpState:
                     else:
                         Mario.x = clamp(obs.x + 50, Mario.x, 1000)
 
-        for ground3 in server.obstacles.block3s:
-            if collision.collide(Mario, ground3):
-                if Mario.y > ground3.y + 40:
-                    Mario.y = ground3.y + 50
-                    Mario.jumpTime = 0.0
-                    if Mario.velocity ** 2 > 0:
-                        Mario.add_event(RUNNING)
-                    else:
-                        Mario.add_event(LANDING)
-                    break
-                else:
-                    Mario.jumpv *= -1
-                    break;
-
         for pipe in server.obstacles.pipes:
             if collision.collide(Mario, pipe):
                 if Mario.y > pipe.y + 80:
@@ -256,22 +287,6 @@ class JumpState:
                     else:
                         Mario.x = clamp(pipe.x + 53, Mario.x, 1000)
 
-        # for randomBox in server.obstacles.randombox:
-        #     if collision.collide(Mario, randomBox):
-        #         if Mario.y > randomBox.y + 40:
-        #             Mario.y = randomBox.y + 50
-        #             Mario.jumpTime = 0.0
-        #             if Mario.velocity ** 2 > 0:
-        #                 Mario.add_event(RUNNING)
-        #             else:
-        #                 Mario.add_event(LANDING)
-        #             break
-        #         else:
-        #             if randomBox.state:
-        #                 randomBox.get_item()
-        #             Mario.jumpv *= -1
-        #             break
-
         for ground2 in server.obstacles.block2s.copy() + server.obstacles.randombox.copy():
             if collision.collide(Mario, ground2):
                 if Mario.y > ground2.y + 40:
@@ -284,9 +299,24 @@ class JumpState:
                     break
                 else:
                     if isinstance(ground2, object.RandomBox):
+                        ground2.is_move = True
                         ground2.get_item()
                     Mario.jumpv *= -1
                     break
+
+        for ground3 in server.obstacles.block3s:
+            if collision.collide(Mario, ground3):
+                if Mario.y > ground3.y + 40:
+                    Mario.y = ground3.y + 50
+                    Mario.jumpTime = 0.0
+                    if Mario.velocity ** 2 > 0:
+                        Mario.add_event(RUNNING)
+                    else:
+                        Mario.add_event(LANDING)
+                    break
+                else:
+                    Mario.jumpv *= -1
+                    break;
 
         for ground in server.obstacles.ground:
             if collision.collide(Mario, ground):
@@ -304,19 +334,73 @@ class JumpState:
                     else:
                         Mario.x = clamp(ground.x + 50, Mario.x, 1000)
 
-        for enemy in server.enemies.monster:
-            if collision.collide(Mario, enemy):
-                if Mario.y > enemy.y + 25:
-                    server.enemies.monster.remove(enemy)
-                    game_world.remove_object(enemy)
+        for e in server.enemies.monster:
+            if collision.collide(Mario, e):
+                if Mario.y > e.y + 25:
+                    if isinstance(e, enemy.Boss):
+                        if Mario.hit_timer == 0:
+                            Mario.hit()
+                            Mario.hit_timer = 2.0
+                            if Mario.life <= 0:
+                                Mario.add_event(GAME_OVER)
+                    else:
+                        server.enemies.monster.remove(e)
+                        game_world.remove_object(e)
                 else:
-                    Mario.hit()
-                    if Mario.life <= 0:
-                        Mario.add_event(GAME_OVER)
+                    if Mario.hit_timer == 0:
+                        Mario.hit()
+                        Mario.hit_timer = 2.0
+                        if Mario.life <= 0:
+                            Mario.add_event(GAME_OVER)
+                break
+
+        if server.obstacles.ax is not None:
+            if collision.collide(Mario, server.obstacles.ax):
+                # print('ax')
+                Mario.bridge_break()
+                game_world.remove_object(server.obstacles.ax)
+                server.obstacles.ax = None
+
         if server.obstacles.plag is not None:
             if collision.collide(Mario, server.obstacles.plag):
                 Mario.x = server.obstacles.plag.x
                 Mario.add_event(CLEAR)
+
+        if server.obstacles.fire is not None:
+            for fire in server.obstacles.fire:
+                if collision.collide(Mario, fire):
+                    Mario.jumpv = 30
+                    Mario.life = 0
+                    Mario.add_event(GAME_OVER)
+
+        if len(server.enemies.fireball):
+            for fire in server.enemies.fireball:
+                if collision.collide(Mario, fire):
+                    if Mario.hit_timer == 0:
+                        Mario.hit()
+                        Mario.hit_timer = 2.0
+                        if Mario.life <= 0:
+                            Mario.add_event(GAME_OVER)
+                    break
+
+        if server.obstacles.bridge is not None:
+            for bridge in server.obstacles.bridge:
+                if collision.collide(Mario, bridge):
+                    if Mario.y >= bridge.y:
+                        Mario.y = bridge.y + bridge.h / 2 + 25
+                        Mario.jumpTime = 0.0
+                        if Mario.velocity ** 2 > 0:
+                            Mario.add_event(RUNNING)
+                        else:
+                            Mario.add_event(LANDING)
+                        break
+                    else:
+                        if Mario.dir > 0:
+                            Mario.x = clamp(-1, Mario.x, bridge.x - 50)
+                        else:
+                            Mario.x = clamp(bridge.x + 50, Mario.x, 1000)
+                        break
+
 
     def draw(Mario):
         if Mario.dir > 0:
@@ -341,7 +425,7 @@ class EndState:
         if Mario.life <= 0:
             Mario.jumpTime += game_framework.frame_time
             Mario.y += Mario.jumpv * Mario.jumpTime + (GRAVITY_PPSS * Mario.jumpTime ** 2 / 2)
-            if Mario.y < 0:
+            if Mario.y < -200:
                 game_framework.change_state(over)
         else:
             Mario.y -= RUN_SPEED_PPS * game_framework.frame_time
@@ -383,6 +467,7 @@ class Mario:
         self.x = x
         self.y = y
         self.image = [load_image("./image/default_mario.png"), load_image("./image/big_mario.png"), load_image("./image/fire_mario.png")]
+        self.life_image = load_image('./image/life.png')
         self.font = load_font('ENCR10B.TTF', 32)
         self.frame = 0
         self.dir = 1
@@ -392,6 +477,8 @@ class Mario:
         self.jumpTime = 0.0
         self.space = 0.0
         self.camera = 0
+
+        self.hit_timer = 0.0
 
         self.event_que = []
         self.cur_state = IdleState
@@ -412,7 +499,13 @@ class Mario:
 
         self.bgm = load_music('./music/mariobgm.mp3')
         self.bgm.set_volume(32)
-        self.bgm.repeat_play()
+        # self.bgm.repeat_play()
+
+        self.bossbgm = load_music('./music/bossbgm.mp3')
+        self.bossbgm.set_volume(32)
+
+        self.b_b = False
+        self.b_b_timer = 0.0
 
     def plus_coin(self):
         self.coin += 1
@@ -428,7 +521,18 @@ class Mario:
     def update(self):
         self.set_camera()
         self.timer.update()
+        if self.hit_timer > 0:
+            self.hit_timer -= game_framework.frame_time
+        else:
+            self.hit_timer = 0
         self.cur_state.do(self)
+        if self.b_b:
+            self.b_b_timer += game_framework.frame_time
+            if len(server.obstacles.bridge):
+                if self.b_b_timer > 0.2:
+                    self.b_b_timer = 0.0
+                    game_world.remove_object(server.obstacles.bridge.pop())
+
         if len(self.event_que) > 0:
             event = self.event_que.pop()
             self.cur_state.exit(self, event)
@@ -471,6 +575,7 @@ class Mario:
 
     def stop_bgm(self):
         self.bgm.stop()
+        self.bossbgm.stop()
 
     def grow(self):
         self.life += 1
@@ -488,4 +593,9 @@ class Mario:
         draw_rectangle(*self.get_bb())
         self.coinImage.clip_draw(0, 0, 120, 115, 20, get_canvas_height() - 50, 40, 40)
         self.font.draw(45, get_canvas_height() - 50, 'x%d' % self.coin, (255, 255, 255))
+        self.life_image.draw(20, get_canvas_height() - 100)
+        self.font.draw(45, get_canvas_height() - 100, 'x%d' % self.life, (255, 255, 255))
         self.timer.draw()
+
+    def bridge_break(self):
+        self.b_b = True

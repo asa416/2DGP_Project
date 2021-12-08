@@ -1,4 +1,4 @@
-DebugingMode = 1
+DebugingMode = 0
 
 
 class GameState:

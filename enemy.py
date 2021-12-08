@@ -1,5 +1,6 @@
 from pico2d import *
 import game_framework
+import game_world
 import server
 import collision
 from BehaviorTree import BehaviorTree, SelectorNode, SequenceNode, LeafNode
@@ -128,12 +129,17 @@ class Boss:
         self.timer = 1.0
         self.frame = 0
         self.speed = 1
+        self.jump_speed = 3
         self.camera = 0
+        self.jump_time = 0.0
+        self.fire = []
+        self.jump_or_fire = "fire"
         self.build_behavior_tree()
 
     def wander(self):
         self.speed = ENEMY_SPEED_PPS
         self.timer -= game_framework.frame_time
+        self.x += self.speed * game_framework.frame_time * self.dir
         if self.timer <= 0:
             self.timer = 1.0
             self.dir *= -1
@@ -141,9 +147,56 @@ class Boss:
         else:
             return BehaviorTree.RUNNING
 
+    def jump(self):
+        self.jump_time += game_framework.frame_time
+        self.y += self.jump_speed * self.jump_time - 10 * self.jump_time ** 2 / 2
+        for bridge in server.obstacles.bridge:
+            if collision.collide(self, bridge):
+                self.y = bridge.y + bridge.h / 2 + self.h / 2
+                self.jump_time = 0.0
+                self.jump_or_fire = 'fire'
+                return BehaviorTree.SUCCESS
+        return BehaviorTree.RUNNING
+
+    def check_ground(self):
+        for bridge in server.obstacles.bridge:
+            if collision.collide(self, bridge):
+                return BehaviorTree.FAIL
+        return BehaviorTree.SUCCESS
+
+    def die(self):
+        self.y -= 20
+        if self.y < 0:
+            server.enemies.monster.clear()
+            game_world.remove_object(self)
+        else:
+            return BehaviorTree.RUNNING
+
     def build_behavior_tree(self):
         wander_node = LeafNode("wander", self.wander)
-        self.bt = BehaviorTree(wander_node)
+        jump_node = LeafNode("jump", self.jump)
+        fire_node = LeafNode("fire", self.fireball)
+
+        die_node = LeafNode("die", self.die)
+        check_ground_node = LeafNode("check", self.check_ground)
+        check_die_node = SequenceNode("check die")
+        check_die_node.add_children(check_ground_node, die_node)
+
+        jump_fire_node = SelectorNode("jump or fire")
+        jump_fire_node.add_children(check_die_node, fire_node, jump_node)
+
+        main_node = SequenceNode("main")
+        main_node.add_children(wander_node, jump_fire_node)
+
+        self.bt = BehaviorTree(main_node)
+
+    def fireball(self):
+        if self.jump_or_fire == 'jump':
+            return BehaviorTree.FAIL
+        self.jump_or_fire = 'jump'
+        server.enemies.fireball.append(FireBall(self.x, self.y))
+        print("fire")
+        return BehaviorTree.SUCCESS
 
     def set_camera(self):
         self.camera = server.cam.get_camera()
@@ -151,13 +204,42 @@ class Boss:
     def update(self):
         self.set_camera()
         self.bt.run()
-        self.x += self.speed * game_framework.frame_time * self.dir
         self.frame = (self.frame + FRAMES_PER_ACTION_BOSS * ACTION_PER_TIME * game_framework.frame_time) % 2
-
 
     def get_bb(self):
         return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
 
     def draw(self):
         self.image.clip_draw(80 * int(self.frame), 150, 80, 70, self.x - self.camera, self.y, self.w, self.h)
+        draw_rectangle(*self.get_bb())
+
+class FireBall:
+    image = None
+    def __init__(self, x, y):
+        if FireBall.image is None:
+            FireBall.image = load_image('./image/fireball.png')
+
+        game_world.add_object(self, 3)
+        self.x, self.y = x, y
+        self.speed = 500
+        self.camera = 0
+        self.w, self.h = 55, 17
+        self.frame = 0
+
+    def update(self):
+        self.set_camera()
+        self.x -= self.speed * game_framework.frame_time
+        self.frame = (self.frame + FRAMES_PER_ACTION_GOOM * ACTION_PER_TIME * game_framework.frame_time) % 2
+        if self.x < 3000:
+            server.enemies.fireball.remove(self)
+            game_world.remove_object(self)
+
+    def set_camera(self):
+        self.camera = server.cam.get_camera()
+
+    def get_bb(self):
+        return self.x - self.camera - self.w / 2, self.y - self.h / 2, self.x - self.camera + self.w / 2, self.y + self.h / 2
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame) * 45 + 1, 0, 45, 45, self.x - self.camera, self.y, self.w, self.h)
         draw_rectangle(*self.get_bb())

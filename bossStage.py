@@ -27,6 +27,7 @@ def enter():
     game_world.add_object(server.obstacles.ax, 3)
     game_world.add_objects(server.obstacles.bridge, 1)
     game_world.add_object(server.char, 4)
+    server.char.bossbgm.repeat_play()
 
 def exit():
     global bg

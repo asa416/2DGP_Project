@@ -32,6 +32,7 @@ def enter():
     game_world.add_object(server.obstacles.plag, 2)
     game_world.add_object(server.BG, 0)
     game_world.add_object(server.cam, 0)
+    server.char.bgm.repeat_play()
 
 
 def exit():
@@ -44,6 +45,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            server.char.stop_bgm()
             game_framework.change_state(world)
         else:
             server.char.handleEvent(event)

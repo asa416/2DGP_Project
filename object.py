@@ -1,4 +1,6 @@
 from pico2d import *
+
+import game_framework
 from game_framework import DebugingMode
 import item
 
@@ -55,17 +57,31 @@ class GroundBlock:
 
 class RandomBox:
     image = None
+    image2 = None
 
     def __init__(self, x, y):
         if RandomBox.image == None:
             RandomBox.image = load_image('./image/randombox.png')
+        if RandomBox.image2 is None:
+            RandomBox.image2 = load_image('./image/block.png')
         self.x, self.y = x, y
+        self.moto_y = self.y
+        self.move_time = 0.0
+        self.is_move = False
         self.state = True
         self.num = 1
         self.camera = 0
         self.w, self.h = 50, 50
         self.it = item.Mushroom(self.x, self.y + 50)
         # self.item = 1
+
+    def move(self):
+        self.move_time += game_framework.frame_time
+        self.y += 1.5 * self.move_time - 10 * self.move_time ** 2 / 2
+        if self.y < self.moto_y:
+            self.y = self.moto_y
+            self.move_time = 0.0
+            self.is_move = False
 
     def get_item(self):
         if not self.state:
@@ -84,12 +100,17 @@ class RandomBox:
 
     def update(self):
         self.set_camera()
+        if self.is_move:
+            self.move()
         self.it.update()
         if self.num != 0:
             pass
 
     def draw(self):
-        self.image.draw(self.x - self.camera, self.y, self.w, self.h)
+        if self.num <= 0:
+            self.image2.draw(self.x - self.camera, self.y, self.w, self.h)
+        else:
+            self.image.draw(self.x - self.camera, self.y, self.w, self.h)
         self.it.draw()
         if DebugingMode == 1:
             draw_rectangle(*self.get_bb())
